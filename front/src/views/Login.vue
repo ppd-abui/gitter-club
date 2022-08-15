@@ -14,13 +14,13 @@ export default {
     <el-main>
       <div style="text-align: center; font-family: Cinzel; font-size: 30px; position: relative; bottom: 20px">Sign in to GitterClub</div>
 
-      <el-form ref="ruleFormRef" :model="user" :rules="rules" status-icon style="width: 350px; border: 1.5px solid #d1d1d1; border-radius: 20px; background: #f7f7f7; margin: auto;">
+      <el-form ref="formRef" :model="user" :rules="rules" status-icon style="width: 350px; border: 1.5px solid #d1d1d1; border-radius: 20px; background: #f7f7f7; margin: auto;">
         <div style="margin: 0 0 30px 0"/>
 
         <p style="position: relative; right: 90px; font-size: 14px; text-align: center; margin: auto;">Username</p>
 <!--Username-->
-        <el-form-item prop="account" >
-          <el-input v-model="user.userAccount" type="account" style="width: 250px; margin: auto" autocomplete="off"/>
+        <el-form-item prop="userAccount" style="width: 250px; margin: auto; margin-bottom: 20px" >
+          <el-input v-model="user.userAccount" autocomplete="off"/>
         </el-form-item>
 
         <p>
@@ -29,12 +29,12 @@ export default {
           <el-link style="position: relative; left: 140px; color: #1E97D4; font-size: 12px; text-align: center; margin: auto;">forgot password?</el-link>
         </p>
 <!--Password-->
-        <el-form-item prop="password">
-          <el-input v-model="user.userPassword" type="password" style="width: 250px; margin: auto" autocomplete="off" show-password/>
+        <el-form-item prop="userPassword" style="width: 250px; margin: auto; margin-bottom: 20px" >
+          <el-input v-model="user.userPassword" autocomplete="off" show-password/>
         </el-form-item>
 <!--sign in button-->
         <el-form-item>
-          <el-button type="primary" @click=login(); style="color: white; font-size: 16px; font-family: 'Calibri'; letter-spacing: 2px; width: 250px; margin: auto;">
+          <el-button type="primary" @click=login(formRef); style="color: white; font-size: 16px; font-family: 'Calibri'; letter-spacing: 2px; width: 250px; margin: auto;">
             sign in
           </el-button>
         </el-form-item>
@@ -65,7 +65,7 @@ export default {
   import {ref, reactive} from "vue";
   import request from "../utils/request";
   import type { FormInstance } from 'element-plus'
-  const ruleFormRef = ref<FormInstance>()
+  const formRef = ref<FormInstance>()
 
   let user = reactive({
     userAccount: '',
@@ -80,7 +80,7 @@ export default {
     }
   }
   const checkAccount = (rule: any, value: any, callback: any) => {
-    if (value === '') {
+    if (!value) {
       callback(new Error('Please input the username'))
     } else {
       callback()
@@ -88,16 +88,25 @@ export default {
   }
 
   const rules = reactive({
-    account: [{ validator: checkAccount, trigger: 'blur' }],
-    password: [{ validator: checkPass, trigger: 'blur' }],
+    userAccount: [{ validator: checkAccount, trigger: 'blur' }],
+    userPassword: [{ validator: checkPass, trigger: 'blur' }],
   })
 
-  function login(){
-    console.log('login')
-    request.post('/login', user)
-      .then(Res=>{
-        console.log(Res)
-      })
+  function login(formEl: FormInstance | undefined){
+    if (!formEl) return
+    formEl.validate((valid) => {
+      if (valid) {
+        console.log('login')
+        request.post('/login', user)
+            .then(Res=>{
+              console.log(Res)
+            })
+      } else {
+        console.log('error')
+        return false
+      }
+    })
+
 
   }
 </script>
