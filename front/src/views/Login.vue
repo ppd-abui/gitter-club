@@ -5,7 +5,7 @@ export default {
 </script>
 
 <template>
-  <el-container style="height: 100%; display: flex">
+  <el-container style="height: 100%; display: flex;">
 <!--Logo-->
     <el-header style="margin: auto; height: 180px">
       <img style="margin-top: 40px; object-fit: contain; height: 70%" src="src/assets/black.png">
@@ -22,13 +22,16 @@ export default {
           <el-input style="width: 250px; margin: auto"/>
 <!--Password-->
         </el-form-item>
-        <p style="position: relative; right: 90px; font-size: 14px; text-align: center; margin: auto;">Password</p>
+        <p>
+          <span style="position: relative; left: 51px; font-size: 14px; text-align: center;">Password</span>
+          <span style="position: relative; left: 140px; color: #1E97D4; font-size: 12px; text-align: center; margin: auto;">forgot password?</span>
+        </p>
         <el-form-item>
           <el-input style="width: 250px; margin: auto"/>
         </el-form-item>
 <!--sign in button-->
         <el-form-item>
-          <el-button style="color: white; font-size: 16px; font-family: 'Calibri Light'; letter-spacing: 2px; background: #1E8AFC; width: 250px; margin: auto;">
+          <el-button type="primary" style="color: white; font-size: 16px; font-family: 'Calibri'; letter-spacing: 2px; width: 250px; margin: auto;">
             sign in
           </el-button>
         </el-form-item>
