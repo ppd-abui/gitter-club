@@ -1,5 +1,19 @@
 package gitter.server.common;
 
+/*
+* 返回数据格式：
+* {
+*   code:int,
+*   data:{},
+*   msg:String
+* }
+*
+* define code:
+* success:200
+* failed:500
+* */
+
+
 public class Result<T> {
     private int code;
     private T data;
