@@ -14,7 +14,7 @@ public class User {
     private Integer userId;
     private String userAccount;
     private String userPassword;
-    private String userNickname;
+    private String userName;
     private Date userBirthday;
     private String userSex;
     private String userFollowRepositories;
