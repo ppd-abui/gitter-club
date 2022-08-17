@@ -1,7 +1,6 @@
 package gitter.server;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
@@ -36,21 +34,57 @@ public class JGit {
         }
     }
 
-
-    public static void main(String[] args) throws IOException, GitAPIException {
-        String userName = "zyyyyyyyy";
-        String repoName = "testJGit2";
+    //获取测试仓库的Git对象
+    public static Git getTestGit() throws IOException, GitAPIException{
+        String userName = "ppd-abui";
+        String repoName = "testJGit";
         //仓库路径
         String dir = "E:/idea/repository/" + userName + "/" + repoName + "/";
 
-
-        Git git = GitUtils.getRepository(userName,repoName);
+//        现实仓库路径
 //        System.out.println(git2.getRepository().getDirectory());
-//        git2.add().addFilepattern("test.txt").call();
 
-//        Status status = git.status().call();
-//        System.out.println(status.getUntracked().toString());
-//        System.out.println("-------------------------");
+        return GitUtils.getRepository(userName,repoName);
+    }
+
+    //查看Git仓库文件状态status
+    public static void statusOperation() throws IOException, GitAPIException{
+        Git git = getTestGit();
+
+        //获取仓库的Status对象
+        Status status = git.status().call();
+
+        //查看已添加的文件,返回Set<String>
+        status.getAdded();
+
+        //查看发生变化的文件
+        status.getChanged();
+
+        //查看未追踪的文件
+        status.getUntracked();
+
+        //在日志中查看
+        System.out.println(status.getUntracked().toString());
+    }
+
+    //分支遍历、创建、删除
+    public static void branchOperation() throws IOException, GitAPIException{
+
+        Git git = getTestGit();
+
+        List<Ref> refs = git.branchList().call();
+        for(Ref ref:refs){
+            System.out.println(ref.getName());
+        }
+
+        git.branchCreate().setName("test").call();
+        git.branchDelete().setBranchNames("test").call();
+    }
+
+    //查看commit差异
+    public static void diff() throws IOException, GitAPIException{
+
+        Git git = getTestGit();
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         AbstractTreeIterator newTreeIter = prepareTreeParser(git.getRepository(), git.getRepository().resolve("HEAD").getName());
@@ -62,17 +96,11 @@ public class JGit {
                 .setOutputStream(outputStream) //输出流  用outputStream，后面转成字符串
                 .call();
         System.out.println(outputStream);
+    }
 
+    public static void main(String[] args) throws IOException, GitAPIException {
+
+        Git git = getTestGit();
+        git.add().addFilepattern(".").call();
     }
 }
-
-/*
-        List<Ref> refs = git2.branchList().call();
-        for(Ref ref:refs){
-            System.out.println(ref.getName());
-        }
-
-        git2.branchCreate().setName("test").call();
-        git2.branchDelete().setBranchNames("test").call();
-        System.out.println("-------------------------");
-* */
