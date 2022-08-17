@@ -12,6 +12,7 @@ const router = createRouter({
       path: '/person',
       name: 'person',
       component: () => import('../views/Person.vue'),
+      redirect: '/RepositoryCenter',
       children: [{
         path: '/RepositoryCenter',
         name: 'RepositoryCenter',

@@ -15,9 +15,9 @@ export default {
               <div id = "card">
               <el-divider/>
                 <el-link type="primary" href="https://element.eleme.io" style="font-family: Calibri; font-size: 24px">{{item.name}}</el-link>
-                <el-  size = small style="color:black;margin-left: 10px" round>
+                <el-button  size = small style="color:black;margin-left: 10px" round>
                   {{ item.look }}
-                </el->
+                </el-button>
                 <div style = "float:right;margin-right: 20px">
                   <el-button type="warning" :icon="Star" circle  @click="testStar(item.num)" />
                 </div>
