@@ -15,7 +15,7 @@ import javax.annotation.Resource;
 public class UserController {
 
     @Resource
-    UserService userService;
+    private UserService userService;
 
     @PostMapping("/login")
     public Result<?> login(@RequestBody User user){
@@ -26,9 +26,6 @@ public class UserController {
         if (res == null){
             return new Result<>(500,null,"用户名或密码错误！");
         }
-
-        //返回信息
-
 
         return new Result<>(200,null,"登录成功");
     }
