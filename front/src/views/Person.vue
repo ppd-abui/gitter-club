@@ -25,8 +25,8 @@ export default {
               mode="horizontal"
               style="height: 80px"
           >
-            <el-menu-item style="margin-left: 50%" index="1" @click="go('/RepositoryCenter')"><el-icon><HomeFilled /></el-icon> Repository</el-menu-item>
-            <el-menu-item index="2" @click="go('/StarCenter')"> <el-icon><Star /></el-icon> Star</el-menu-item>
+            <el-menu-item style="margin-left: 50%" index="1" @click="go('RepositoryCenter')"><el-icon><HomeFilled /></el-icon> Repository</el-menu-item>
+            <el-menu-item index="2" @click="go('StarCenter')"> <el-icon><Star /></el-icon> Star</el-menu-item>
           </el-menu>
         </el-header>
         <el-container>
@@ -39,7 +39,8 @@ export default {
           </el-aside>
     <!--子界面路由-->
           <el-main>
-            <router-view/>
+            <RepositoryCenter v-if="showTab='RepositoryCenter'"/>
+            <StarCenter v-if="showTab='StarCenter'"/>
           </el-main>
         </el-container>
       </el-container>
@@ -52,10 +53,14 @@ export default {
 
 <script setup>
   import router from "../router";
+  import {useRoute} from "vue-router/dist/vue-router";
 
   function go(path){
-    router.push(path)
+    router.push({name: 'space', query: {tab: path}})
+    router
   }
+  const route=useRoute()
+  const showTab=route.query.tab
 
 </script>
 

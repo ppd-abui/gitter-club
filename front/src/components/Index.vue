@@ -15,15 +15,20 @@ export default {
     <el-col :span="8">
       <el-input style="margin-top:12px;margin-left: 5px"  v-model="input" placeholder="Please input" :suffix-icon="Search"></el-input>
     </el-col>
-    <img style="position: absolute; right: 20px; margin-top: 5px ; height:80%" src="src/assets/white.png">
+    <img @click=goCenter style="position: absolute; right: 20px; margin-top: 5px ; height:80%" src="src/assets/white.png">
   </el-menu>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { Search } from '@element-plus/icons-vue'
-const input = ref("")
-
+import router from '../router'
+  const input = ref("")
+  const userAccount=ref("sidi")
+  function goCenter(){
+    router.push({name: 'space'})
+    router
+  }
 </script>
 <style scoped>
 

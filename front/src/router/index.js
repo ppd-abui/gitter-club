@@ -5,24 +5,17 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/home'
-    }, {
-      path: '/home',
       name: 'home',
       component: () => import('../views/Home.vue')
     },{
-      path: '/person',
-      name: 'person',
+      path: '/space',
+      name: 'space',
       component: () => import('../views/Person.vue'),
-      redirect: '/RepositoryCenter',
+      // redirect: '/RepositoryCenter',
       children: [{
-        path: '/RepositoryCenter',
-        name: 'RepositoryCenter',
+        path: '/:tab',
+        name: 'tab',
         component: () => import('../components/RepositoryCenter.vue')
-      },{
-        path: '/StarCenter',
-        name: 'StarCenter',
-        component: () => import('../components/StarCenter.vue')
       }]
     },{
       path: '/login',
@@ -31,7 +24,7 @@ const router = createRouter({
     },{
       path: '/register',
       name: 'register',
-      component: () => import('../views/Register.vue')
+      component: () => import('../views/RegisterHelper.vue')
     }, {
       path: '/404',
       name: '404',
