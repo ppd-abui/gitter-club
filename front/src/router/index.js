@@ -11,12 +11,15 @@ const router = createRouter({
       path: '/space',
       name: 'space',
       component: () => import('../views/Person.vue'),
-      // redirect: '/RepositoryCenter',
       children: [{
         path: '/:tab',
         name: 'tab',
         component: () => import('../components/RepositoryCenter.vue')
       }]
+    }, {
+      path: '/new',
+      name: 'createRepo',
+      component: () => import('../views/CreateRepo.vue')
     },{
       path: '/login',
       name: 'login',

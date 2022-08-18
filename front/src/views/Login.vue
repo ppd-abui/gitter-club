@@ -17,19 +17,19 @@ export default {
       <el-form ref="formRef" :model="user" :rules="rules" status-icon style="width: 350px; border: 1.5px solid #d1d1d1; border-radius: 20px; background: #f7f7f7; margin: auto;">
         <div style="margin: 0 0 30px 0"/>
 
-        <p style="position: relative; right: 90px; font-size: 14px; text-align: center; margin: auto;">Username</p>
-<!--Username-->
-        <el-form-item prop="userAccount" style="width: 250px; margin: auto; margin-bottom: 20px" >
+        <p style="position: relative; right: 95px; font-size: 14px; text-align: center; margin: auto;">Account</p>
+<!--userAccount-->
+        <el-form-item prop="userAccount" style="width: 250px; margin: auto;" >
           <el-input v-model="user.userAccount" autocomplete="off"/>
         </el-form-item>
 
-        <p>
+        <p style="margin-top: 10px">
           <span style="position: relative; left: 51px; font-size: 14px; text-align: center;">Password</span>
 <!--  forgot link-->
           <el-link style="position: relative; left: 140px; color: #1E97D4; font-size: 12px; text-align: center; margin: auto;">forgot password?</el-link>
         </p>
 <!--Password-->
-        <el-form-item prop="userPassword" style="width: 250px; margin: auto; margin-bottom: 20px" >
+        <el-form-item prop="userPassword" style="width: 250px; margin: auto auto 20px;" >
           <el-input v-model="user.userPassword" autocomplete="off" show-password/>
         </el-form-item>
 <!--sign in button-->
@@ -81,7 +81,7 @@ export default {
   }
   const checkAccount = (rule: any, value: any, callback: any) => {
     if (!value) {
-      callback(new Error('Please input the username'))
+      callback(new Error('Please input the account'))
     } else {
       callback()
     }

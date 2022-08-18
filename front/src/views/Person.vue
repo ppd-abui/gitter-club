@@ -39,8 +39,8 @@ export default {
           </el-aside>
     <!--子界面路由-->
           <el-main>
-            <RepositoryCenter v-if="showTab='RepositoryCenter'"/>
-            <StarCenter v-if="showTab='StarCenter'"/>
+            <RepositoryCenter v-if="route.query.tab==='RepositoryCenter'"/>
+            <StarCenter v-if="route.query.tab==='StarCenter'"/>
           </el-main>
         </el-container>
       </el-container>
@@ -54,13 +54,13 @@ export default {
 <script setup>
   import router from "../router";
   import {useRoute} from "vue-router/dist/vue-router";
+  import {ref} from "vue";
 
   function go(path){
     router.push({name: 'space', query: {tab: path}})
-    router
+    console.log(route.query.tab)
   }
   const route=useRoute()
-  const showTab=route.query.tab
 
 </script>
 
