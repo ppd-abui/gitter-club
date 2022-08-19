@@ -8,6 +8,9 @@ export default {
   <div style="font-size: 60px;">404 not found</div>
 </template>
 
+<script setup>
+
+</script>
 <style scoped>
 
 </style>

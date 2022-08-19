@@ -6,83 +6,103 @@ export default {
 
 <template>
 
-    <el-container>
-      <el-main>
-        <el-col :span="20">
-        <el-input style="margin-top:12px;margin-left: 5px"  v-model="input" placeholder="Please input" :suffix-icon="Search"></el-input>
+  <el-container>
+    <el-main>
+      <!-- 查询窗口-->
+        <el-row style="margin-top:12px;">
+          <el-col :span="12" >
+            <el-input   v-model="input" placeholder="find a repository" :suffix-icon="Search"></el-input>
           </el-col>
-            <el-col :span ="30" v-for = "(item) in tableData" :key = "item.ID" mode = "vertical">
-              <div id = "card">
-              <el-divider/>
-                <el-link type="primary" href="https://element.eleme.io" style="font-family: Calibri; font-size: 24px">{{item.name}}</el-link>
-                <el-button  size = small style="color:black;margin-left: 10px" round>
-                  {{ item.look }}
-                </el-button>
-                <div style = "float:right;margin-right: 20px">
-                  <el-button type="warning" :icon="Star" circle  @click="testStar(item.num)" />
-                </div>
-                <br/>
-                <span style="font-size: 20px">
+          <el-col :span="5" style="margin-left:10px">
+           <el-select v-model="type" placeholder="select type">
+             <el-option label="All" value="0" />
+             <el-option label="Public" value="1" />
+             <el-option label="Private" value="2" />
+           </el-select>
+          </el-col>
+          <el-col :span="4" style="margin-left:10px">
+            <el-select v-model="sort_type" placeholder="sort">
+              <el-option label="Last updated" value="0" />
+              <el-option label="Name" value="1" />
+              <el-option label="Stars" value="2" />
+            </el-select>
+          </el-col>
+          <el-col :span="2" style="margin-left:10px">
+            <el-button type="success">new</el-button>
+          </el-col>
+        </el-row>
+      <!-- 仓库信息展示-->
+      <el-col :span ="30" v-for = "(item) in tableData" :key = "item.ID" mode = "vertical">
+        <div id = "card">
+          <el-divider>
+            <el-icon><star-filled /></el-icon>
+          </el-divider>
+          <el-link type="success" href="https://element.eleme.io" style="font-family: Calibri;font-size: 35px">{{item.name}}</el-link>
+          <el-tag style="margin-left:10px" size = small >{{ item.look }}</el-tag>
+          <div style = "float:right;margin-right: 20px">
+            <el-button  :icon="item.star==0 ?Star:StarFilled"  @click="testStar(item.star)" > Star</el-button>
+          </div>
+
+          <br/>
+          <span style="font-size: 20px">
                   {{item.info}}
-                  <br/>
-                  <br/>
+                  <br/><br/>
                   <div style="font-size: 15px;font-family: Cambria;color:#808080">
                    {{item.time}}
                   </div>
                 </span>
 
-              </div>
-            </el-col>
-      </el-main>
-    </el-container>
+        </div>
+      </el-col>
+    </el-main>
+  </el-container>
 
 </template>
 
 
 <script lang="ts" setup>
 import router from '../router/index.js'
-import { ref } from 'vue'
+import { ref,inject } from 'vue'
 import { Search,Star,StarFilled } from '@element-plus/icons-vue'
 
+const type = ref("")
+const sort_type = ref("")
 const input = ref("")
-const getValue = (type: string) => {
-  const getCssVarValue = (prefix, type) =>
-      getComputedStyle(document.documentElement).getPropertyValue(
-          `--el-${prefix}-${type}`
-      )
-  return getCssVarValue('border-radius', type)
-}
 function testStar(bool){
-  if(bool)
-    ;
+  if(bool == 1)
+    bool = 0;
   else
-    ;
+    bool = 1;
+  this.reload();
 }
 
 const tableData = [
   {
     ID:'1',
-    name:'GitterClub',
+    name:'2',
     look:'public',
-    info:'Git代码服务管理平台',
+    info:'1111111',
     num:'2',
     time:'1111',
+    star:'1',
   },
   {
     ID:'2',
-    name:'LibrarySystem',
+    name:'2',
     look:'public',
-    info:'图书管理系统',
+    info:'1111111',
     num:'2',
     time:'1111',
+    star:'0',
   },
   {
     ID:'3',
-    name:'Market',
+    name:'2',
     look:'public',
-    info:'商品管理系统',
+    info:'1111111',
     num:'2',
     time:'1111',
+    star:'0',
   },
 ]
 

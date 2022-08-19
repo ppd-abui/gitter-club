@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,15 +7,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: () => import('../views/Home.vue')
-    },{
-      path: '/space',
-      name: 'space',
-      component: () => import('../views/Person.vue'),
-      children: [{
-        path: '/:tab',
-        name: 'tab',
-        component: () => import('../components/RepositoryCenter.vue')
-      }]
     },{
       path: '/new',
       name: 'createRepo',
@@ -57,6 +48,15 @@ const router = createRouter({
       name: 'search',
       component: () => import('../views/SearchFile.vue')
     },{
+      path: '/space',
+      name: 'space',
+      component: () => import('../views/Person.vue'),
+      children: [{
+        path: '/space/:tab',
+        name: 'tab',
+        component: () => import('../components/RepositoryCenter.vue')
+      }]
+    },{
       path: '/login',
       name: 'login',
       component: () => import('../views/Login.vue'),
@@ -64,13 +64,13 @@ const router = createRouter({
       path: '/register',
       name: 'register',
       component: () => import('../views/Register.vue')
-    }, {
-      path: '/404',
-      name: '404',
-      component: () => import('../views/404.vue')
     },{
       path: '/:catchAll(.*)',
       redirect: '/404'
+    },{
+      path: '/404',
+      name: '404',
+      component: () => import('../views/404.vue')
     }
   ]
 })
