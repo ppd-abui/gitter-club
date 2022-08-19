@@ -6,6 +6,7 @@ import gitter.server.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.UUID;
 
 @RestController
 @RequestMapping()
@@ -24,7 +25,9 @@ public class UserController {
             return new Result<>(500,null,"Wrong user account or password！");
         }
 
-        return new Result<>(200,null,"Login successfully!");
+        String token = UUID.randomUUID()+"";
+        userService.storeToken(token,res);
+        return new Result<>(200,token,"Login successfully!");
     }
 
     @GetMapping("/register/account")

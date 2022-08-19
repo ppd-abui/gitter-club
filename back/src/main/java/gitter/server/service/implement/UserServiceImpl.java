@@ -8,6 +8,8 @@ import gitter.server.service.UserService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -15,6 +17,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     UserMapper userMapper;
 
+    Map<String,User> userMap = new HashMap<>();
 
     @Override   //用户登录账号密码验证
     public User selectUserLogin(String userAccount,String userPassword) {
@@ -38,5 +41,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override   //存储用户token
+    public boolean storeToken(String token,User user){
+        try{
+            userMap.put(token,user);
+            System.out.println(userMap.get(token));
+            return true;
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override   //通过token查找用户
+    public User selectByToken(String token){
+        return userMap.get(token);
     }
 }

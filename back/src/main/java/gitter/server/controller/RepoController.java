@@ -2,7 +2,9 @@ package gitter.server.controller;
 
 import gitter.server.common.Result;
 import gitter.server.entity.Repo;
+import gitter.server.entity.User;
 import gitter.server.service.RepoService;
+import gitter.server.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -14,8 +16,17 @@ public class RepoController {
     @Resource
     RepoService repoService;
 
+    @Resource
+    UserService userService;
+
     @PostMapping("/repo/new")
-    public Result<?> newRepo(@RequestBody Repo repo){
+    public Result<?> newRepo(@RequestHeader("token") String token, @RequestBody Repo repo){
+        User res = userService.selectByToken(token);
+        if(res==null)
+            return new Result<>(500,null,"Create failed!");
+
+        repo.setRepoOwner(res.getUserAccount());
+
         if(repoService.createRepo(repo))
             return new Result<>(200,null,"Create successfully!");
         else
