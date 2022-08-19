@@ -28,4 +28,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.selectOne(Wrappers.<User>lambdaQuery()
                 .eq(User::getUserAccount,userAccount));
     }
+
+    @Override   //用户注册
+    public boolean register(User user){
+        try{
+            userMapper.insert(user);
+            return true;
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

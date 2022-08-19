@@ -65,6 +65,8 @@ export default {
   import {ref, reactive} from "vue";
   import request from "../utils/request";
   import type { FormInstance } from 'element-plus'
+  import router from "../router"
+
   const formRef = ref<FormInstance>()
 
   let user = reactive({
@@ -97,10 +99,10 @@ export default {
     formEl.validate((valid) => {
       if (valid) {
         console.log('login')
-        request.post('/login', user)
-            .then(Res=>{
-              console.log(Res)
-            })
+        request.post('/login', user).then(res=>{
+          console.log(res)
+          router.push('/')
+        })
       } else {
         console.log('error')
         return false

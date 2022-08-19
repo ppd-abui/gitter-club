@@ -18,7 +18,7 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
     @Resource
     RepoMapper repoMapper;
 
-    @Override
+    @Override   //创建仓库
     public boolean createRepo(Repo repo){
         try {
             //在本地文件中新建仓库
@@ -33,7 +33,7 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
         }
     }
 
-    @Override
+    @Override   //通过仓库名搜索仓库（账号+仓库名）
     public Repo selectByRepoName(Repo repo){
         return repoMapper
                 .selectOne(Wrappers.<Repo>lambdaQuery()

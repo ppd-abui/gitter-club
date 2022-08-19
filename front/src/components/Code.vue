@@ -31,6 +31,32 @@
         </template>
       </el-popover>
       <el-button style="margin-left: 20px;">Tags</el-button>
+
+<!--跳转到文件上传页面，待完善-->
+      <el-button onclick="window.location.href='/login'">Upload</el-button>
+<!--跳转到文件上传页面，待完善-->
+
+<!--      文件上传测试-->
+
+      <el-upload
+          auto-upload="false"
+          class="upload-demo"
+          drag
+          action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+          multiple
+      >
+        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+        <div class="el-upload__text">
+          Drop file here or <em>click to upload</em>
+        </div>
+        <template #tip>
+          <div class="el-upload__tip">
+            jpg/png files with a size less than 500kb
+          </div>
+        </template>
+      </el-upload>
+
+<!--      文件上传测试-->
     </div>
   </div>
 <!--    <z主页面>-->

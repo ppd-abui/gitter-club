@@ -30,9 +30,18 @@ public class UserController {
     @GetMapping("/register/account")
     public Result<?> checkUserAccount(@RequestParam(defaultValue = "") String userAccount){
         User res = userService.selectByUserAccount(userAccount);
-        if(res == null)
-            return new Result<>(200,null,"The account is available");
 
-        return new Result<>(500,null,"");
+        if(res == null)
+            return new Result<>(200,null,"The account is available!");
+        else
+            return new Result<>(500,null,"");
+    }
+
+    @PostMapping("/register")
+    public Result<?> register(@RequestBody User user){
+        if(userService.register(user))
+            return new Result<>(200,null,"Register successfully!");
+        else
+            return new Result<>(500,null,"");
     }
 }

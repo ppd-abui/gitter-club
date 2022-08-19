@@ -30,7 +30,7 @@ export default {
           <div style="font-size: 30px; font-weight: lighter; position: relative; top: 20px; left: 20px;">/</div>
           <div style="margin-left: 50px; height: 100%;">
             <span style="font-size: 16px; margin-left: 5px; font-family: Calibri; font-weight: bold; ">Repository name</span><span style="color: indianred">*</span>
-            <el-input @blur="checkRepoName" placeholder="Please input the repository name" class="repoInput" v-model="repo.repoName" style="margin-top: 5px; height: 35px"/>
+            <el-input @blur="checkRepoName" :suffix-icon="isAbleIcon" placeholder="Please input the repository name" class="repoInput" v-model="repo.repoName" style="margin-top: 5px; height: 35px"/>
           </div>
         </div>
         <div style="font-size: 16px; font-family: 'Calibri Light'; color: #808080">Great repository names are short and memorable. </div>
@@ -73,7 +73,7 @@ export default {
           <span style="font-size: 14px; color: #b1b1b1">You are creating a public repository in your personal account.</span>
         </div>
         <el-divider style="margin-top: 15px"/>
-        <el-button @click="createRepo">Create Repository</el-button>
+        <el-button :disabled="!isAble" @click="createRepo">Create Repository</el-button>
       </div>
       <el-divider style="margin-bottom: 0"/>
     </el-main>
@@ -83,9 +83,14 @@ export default {
 
 <script lang="ts" setup>
 
-import {reactive} from "vue";
+import {reactive, ref} from "vue";
 import request from "../utils/request";
 import { ElMessage } from "element-plus";
+import router from '../router'
+
+let isAble = ref(false)
+
+let isAbleIcon = ref('')
 
 function checkRepoName() {
   if (repo.repoName != ''){
@@ -95,7 +100,11 @@ function checkRepoName() {
           type: 'warning',
           message: 'The repository ' + repo.repoName + " already exists on this account",
         })
-        repo.repoName=''
+        isAble.value=false
+        isAbleIcon.value='CircleCloseFilled'
+      } else {
+        isAble.value=true
+        isAbleIcon.value='SuccessFilled'
       }
     })
   }
@@ -117,7 +126,18 @@ function createRepo(){
     return
   }
   request.post('/repo/new', repo).then(res=>{
-    console.log(res)
+    if (res.code === 200){
+      ElMessage({
+        type:"success",
+        message:"Repository created successfully!"
+      })
+      router.push('/repo')
+    } else {
+      ElMessage({
+        type:"error",
+        message:"System error!"
+      })
+    }
   })
 }
 
