@@ -25,22 +25,25 @@ export default {
               mode="horizontal"
               style="height: 80px"
           >
-            <el-menu-item style="margin-left: 50%" index="1" @click="go('RepositoryCenter')"><el-icon><HomeFilled /></el-icon> Repository</el-menu-item>
+            <el-menu-item style="margin-left: 370px" index="1" @click="go('RepositoryCenter')"><el-icon><HomeFilled /></el-icon> Repository</el-menu-item>
             <el-menu-item index="2" @click="go('StarCenter')"> <el-icon><Star /></el-icon> Star</el-menu-item>
           </el-menu>
         </el-header>
-        <el-container>
+        <el-container style="z-index: 2">
   <!--个人信息-->
-          <el-aside style="width: 300px">
-            <div style="width: 100%">
-              <img style="width: 100%; object-fit: fill;" src="../assets/white.png">
+          <el-aside style="width: 400px; position: relative;  bottom: 60px; z-index: 1">
+            <div style="position: relative; width: 100%; margin: 0">
+              <img style="width: 100%; object-fit: fill;" src="../assets/black.png">
             </div>
-            <el-button color="#f0f0f4" style="height:40px; width: 130px">Edit Profile</el-button>
+            <div style="width: 350px; margin-left: 50px; position: relative; bottom: 30px">
+              <div style="font-family: 'Calibri Light'; font-size: 20px; color: grey">Slphx</div>
+              <el-button style="width: 80%; margin-top: 10px">Edit Profile</el-button>
+            </div>
           </el-aside>
     <!--子界面路由-->
-          <el-main>
-            <RepositoryCenter v-if="route.query.tab==='RepositoryCenter'"/>
-            <StarCenter v-if="route.query.tab==='StarCenter'"/>
+          <el-main style="padding: 0; z-index: 2; position: relative; right: 40px">
+            <RepositoryCenter v-if="tab==='RepositoryCenter'"/>
+            <StarCenter v-if="tab==='StarCenter'"/>
           </el-main>
         </el-container>
       </el-container>
@@ -56,9 +59,11 @@ export default {
   import {useRoute} from "vue-router/dist/vue-router";
   import {ref} from "vue";
 
+  let tab = ref('RepositoryCenter')
+
   function go(path){
     router.push({name: 'space', query: {tab: path}})
-    console.log(route.query.tab)
+    tab.value=path
   }
   const route=useRoute()
 

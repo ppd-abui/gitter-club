@@ -112,7 +112,6 @@ function checkRepoName() {
 
 let repo = reactive({
   repoName: '',
-  repoOwner: 'ppd-abui',
   repoBio: '',
   repoVisibility: 'public'
 })

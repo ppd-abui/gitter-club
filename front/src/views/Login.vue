@@ -100,8 +100,9 @@ export default {
       if (valid) {
         console.log('login')
         request.post('/login', user)
-            .then(Res=>{
-              console.log(Res)
+            .then(res=>{
+              sessionStorage.setItem('token', res.data)
+              console.log(res)
             })
         router.push({name: 'home'})
       } else {
