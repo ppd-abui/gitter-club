@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-import gitter.server.utils.GitUtils;
+import gitter.server.utils.JGitUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -44,7 +44,7 @@ public class JGit {
 //        现实仓库路径
 //        System.out.println(git2.getRepository().getDirectory());
 
-        return GitUtils.getRepository(userName,repoName);
+        return JGitUtils.getRepository(userName,repoName);
     }
 
     //查看Git仓库文件状态status
@@ -99,8 +99,28 @@ public class JGit {
     }
 
     public static void main(String[] args) throws IOException, GitAPIException {
-
         Git git = getTestGit();
         git.add().addFilepattern(".").call();
+
+        List<Ref> refs = git.branchList().call();
+        for(Ref ref:refs){
+            if(ref.getName().equals("refs/heads/dev")){
+                System.out.println("Removing branch before");
+                git.branchDelete()
+                        .setBranchNames("dev")
+                        .setForce(true)
+                        .call();
+                break;
+            }
+        }
+
+        git.branchCreate()
+                .setName("dev")
+                .call();
+
+        git.checkout()
+                .setName("dev")
+                .call();
+
     }
 }

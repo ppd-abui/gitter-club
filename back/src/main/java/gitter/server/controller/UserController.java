@@ -3,10 +3,7 @@ package gitter.server.controller;
 import gitter.server.common.Result;
 import gitter.server.entity.User;
 import gitter.server.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -24,9 +21,18 @@ public class UserController {
 
         //查询不到用户返回错误
         if (res == null){
-            return new Result<>(500,null,"用户名或密码错误！");
+            return new Result<>(500,null,"Wrong user account or password！");
         }
 
-        return new Result<>(200,null,"登录成功");
+        return new Result<>(200,null,"Login successfully!");
+    }
+
+    @GetMapping("/register/account")
+    public Result<?> checkUserAccount(@RequestParam(defaultValue = "") String userAccount){
+        User res = userService.selectByUserAccount(userAccount);
+        if(res == null)
+            return new Result<>(200,null,"The account is available");
+
+        return new Result<>(500,null,"");
     }
 }

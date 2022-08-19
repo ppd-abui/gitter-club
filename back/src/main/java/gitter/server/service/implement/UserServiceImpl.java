@@ -22,4 +22,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getUserAccount,userAccount)
                 .eq(User::getUserPassword,userPassword));
     }
+
+    @Override   //通过账号搜索用户
+    public User selectByUserAccount(String userAccount){
+        return userMapper.selectOne(Wrappers.<User>lambdaQuery()
+                .eq(User::getUserAccount,userAccount));
+    }
 }
