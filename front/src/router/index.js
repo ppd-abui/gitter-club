@@ -16,10 +16,27 @@ const router = createRouter({
         name: 'tab',
         component: () => import('../components/RepositoryCenter.vue')
       }]
-    }, {
+    },{
       path: '/new',
       name: 'createRepo',
       component: () => import('../views/CreateRepo.vue')
+    },{
+      path: '/repo',
+      name: 'repository',
+      component: () => import('../views/Repository.vue'),
+      children: [{
+        path: '/repo/code',
+        name: 'code',
+        component: () => import('../components/Code.vue')
+      },{
+        path: 'repo/settings',
+        name: 'settings',
+        component: () => import('../components/RepositorySetting.vue')
+      }]
+    },{
+      path: '/search',
+      name: 'search',
+      component: () => import('../views/SearchFile.vue')
     },{
       path: '/login',
       name: 'login',

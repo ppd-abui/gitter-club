@@ -1,3 +1,13 @@
+<script lang="ts">
+import Index from '../components/Index.vue'
+export default {
+  name: "SearchFile",
+  components: {
+    Index
+  }
+}
+</script>
+
 <template>
 
     <div class="common-layout">
@@ -32,12 +42,7 @@
 
 </template>
 
-<script lang="ts">
 
-export default {
-  name: "SearchFile"
-}
-</script>
 <script lang="ts" setup>
 import RepositoryS from "../components/RepositoryS.vue";
 import index1 from "../components/Index.vue";

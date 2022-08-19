@@ -1,8 +1,22 @@
+<script lang="ts">
+import Index from '../components/Index.vue'
+import RepositoryS from "../components/RepositoryS.vue"
+import Code from "../components/Code.vue"
+export default {
+  name: "Index",
+  components:{
+    Index,
+    RepositoryS,
+    Code
+  }
+}
+</script>
+
 <template>
     <div class="common-layout">
       <el-container>
         <el-header  style="font-size: 30px;padding:0px">
-          <index1></index1>
+          <index/>
         </el-header>
         <el--header style="margin-top: 10px">
           <div  class="icon">
@@ -29,9 +43,7 @@
               <p>Are you sure to delete this?</p>
               <div style="text-align: right; margin: 0">
                 <el-button size="small" text @click="visible = false">cancel</el-button>
-                <el-button size="small" type="primary" @click="visible = false"
-                >confirm</el-button
-                >
+                <el-button size="small" type="primary" @click="visible = false">confirm</el-button>
               </div>
               <template #reference>
                 <el-button style="margin-right: 100px" @click="visible = true">Delete</el-button>
@@ -48,16 +60,16 @@
               mode="horizontal"
               @select="handleSelect"
           >
-            <el-menu-item index="1"><el-icon><Edit /></el-icon>Code</el-menu-item>
-            <el-menu-item index="2"><el-icon><ChatSquare /></el-icon>Issues</el-menu-item>
-            <el-menu-item index="3" ><el-icon><SetUp /></el-icon>Pull requests</el-menu-item>
-            <el-menu-item index="4"><el-icon><Setting /></el-icon>Settings</el-menu-item>
+            <el-menu-item index="1" @click="go('code')"><el-icon><Edit /></el-icon>Code</el-menu-item>
+            <el-menu-item index="2" @click="go('issues')"><el-icon><ChatSquare /></el-icon>Issues</el-menu-item>
+            <el-menu-item index="3" @click="go('pull')"><el-icon><SetUp /></el-icon>Pull requests</el-menu-item>
+            <el-menu-item index="4" @click="go('settings')"><el-icon><Setting /></el-icon>Settings</el-menu-item>
           </el-menu>
         </el-header>
 <!--        <左侧界面>-->
         <el-container>
           <el-aside width="1100px">
-        <code1></code1>
+            <router-view/>
           </el-aside>
 <!--          <右侧界面></右侧界面>-->
           <el-main style="border-left:1px solid ;height:500px;font-size: x-large;font-weight: bold">About</el-main>
@@ -66,28 +78,23 @@
     </div>
 </template>
 
-<script lang="ts">
-import index1 from '../components/Index.vue';
-import repositoryS from "../components/RepositoryS.vue";
-import code1 from "../components/Code.vue"
-export default {
-  name: "Index",
-  components:{
-   index1,
-    repositoryS
-  }
-}
-</script>
+
 <script lang="ts" setup>
-import { ref } from 'vue'
-import RepositoryS from "../components/RepositoryS.vue";
-const visible = ref(false)
-const activeIndex = ref('1')
-const activeIndex2 = ref('1')
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+  import { ref } from 'vue'
+  import router from '../router'
+  const visible = ref(false)
+
+  function go(path){
+    router.push({name: path})
+  }
+  // const activeIndex = ref('1')
+  // const activeIndex2 = ref('1')
+  // const handleSelect = (key: string, keyPath: string[]) => {
+  //   console.log(key, keyPath)
+  // }
 </script>
+
+
 <style>
 .demo-tabs > .el-tabs__content {
   padding: 32px;
