@@ -10,9 +10,6 @@ const request = axios.create({
 // 比如统一加token，对请求参数统一加密
 request.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
-    if (sessionStorage.getItem("user_account")){
-        config.headers['user_account'] = sessionStorage.getItem('user_account')
-    }
 
     return config
 }, error => {
@@ -35,10 +32,12 @@ request.interceptors.response.use(
             if (typeof res === 'string') {
                 res = res ? JSON.parse(res) : res
             }
-        } else {
-            alert(!res.msg ? '系统异常' : res.msg)
-            return Promise.reject(response.data.msg)
         }
+        // else
+        // {
+        //     alert(!res.msg ? '系统异常' : res.msg)
+        //     return Promise.reject(response.data.msg)
+        // }
         return res;
     },
     error => {
