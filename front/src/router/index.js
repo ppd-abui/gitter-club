@@ -27,7 +27,7 @@ const router = createRouter({
     },{
       path: '/register',
       name: 'register',
-      component: () => import('../views/RegisterHelper.vue')
+      component: () => import('../views/Register.vue')
     }, {
       path: '/404',
       name: '404',
