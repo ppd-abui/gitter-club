@@ -10,11 +10,11 @@ export default {
       <el-menu
         default-active="choose"
         >
-        <el-menu-item index = "1" @click = "go('/General')">
+        <el-menu-item index = "1" @click = "go('general')">
           <el-icon><More /></el-icon>
           <span>General</span>
         </el-menu-item>
-        <el-menu-item index = "2" @click = "go('/Collaborator')">
+        <el-menu-item index = "2" @click = "go('collaborator')">
           <el-icon><User /></el-icon>
           <span>Collaborator</span>
         </el-menu-item>
@@ -34,7 +34,7 @@ import General from "../components/RepositorySetting/General.vue"
 
 const choose = ref("1")
 function go(path){
-  router.push(path)
+  router.push({name: path})
 }
 </script>
 

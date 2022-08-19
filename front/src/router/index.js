@@ -24,14 +24,33 @@ const router = createRouter({
       path: '/repo',
       name: 'repository',
       component: () => import('../views/Repository.vue'),
+      redirect: '/repo/code',
       children: [{
         path: '/repo/code',
         name: 'code',
         component: () => import('../components/Code.vue')
       },{
-        path: 'repo/settings',
+        path: '/repo/issues',
+        name: 'issues',
+        component: () => import('../components/Issues.vue')
+      },{
+        path: '/repo/pull',
+        name: 'pull',
+        component: () => import('../components/Pull.vue')
+      },{
+        path: '/repo/settings',
         name: 'settings',
-        component: () => import('../components/RepositorySetting.vue')
+        component: () => import('../components/RepositorySetting.vue'),
+        redirect: '/repo/settings/general',
+        children: [{
+          path: '/repo/settings/general',
+          name: 'general',
+          component: () => import('../components/RepoSetting/General.vue')
+        },{
+          path: '/repo/collaborator',
+          name: 'collaborator',
+          component: () => import('../components/RepoSetting/Collaborator.vue')
+        }]
       }]
     },{
       path: '/search',
