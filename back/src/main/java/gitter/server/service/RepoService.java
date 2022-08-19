@@ -4,6 +4,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import gitter.server.entity.Repo;
 
 public interface RepoService extends IService<Repo> {
-    boolean createRepo(String userAccount,String repoName);
-    Repo selectByRepoName(String userAccount,String repoName);
+    boolean createRepo(Repo repo);
+    Repo selectByRepoName(Repo repo);
 }

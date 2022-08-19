@@ -14,12 +14,21 @@ public class RepoController {
     @Resource
     RepoService repoService;
 
-    @PostMapping("/new")
+    @PostMapping("/repo/new")
     public Result<?> newRepo(@RequestBody Repo repo){
-        if(repoService.createRepo(repo.getRepoOwner(),repo.getRepoName()))
+        if(repoService.createRepo(repo))
             return new Result<>(200,null,"Create successfully!");
         else
             return new Result<>(500,null,"Create failed!");
     }
 
+    @PostMapping("/repo/name")
+    public Result<?> checkRepoName(@RequestBody Repo repo){
+        Repo res = repoService.selectByRepoName(repo);
+
+        if(res==null)
+            return new Result<>(200,null,"This repository name is available");
+        else
+            return new Result<>(500,null,"The repository name already exists on this account");
+    }
 }

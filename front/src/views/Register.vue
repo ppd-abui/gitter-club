@@ -32,7 +32,7 @@ export default {
         <el-form-item prop="confirmPassword" style="width: 300px; margin: auto auto 20px;" label="Confirm" label-width="50px">
           <el-input v-model="user.confirmPassword" show-password/>
         </el-form-item>
-        <el-form-item style="width: 300px; margin: auto auto 20px;" >
+        <el-form-item style="width: 300px; margin: auto auto 15px;" >
           <div style="margin: auto">
             <el-button type="primary" @click="submitForm(ruleFormRef)">
               Submit

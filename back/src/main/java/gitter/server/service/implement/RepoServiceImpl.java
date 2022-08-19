@@ -19,9 +19,13 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
     RepoMapper repoMapper;
 
     @Override
-    public boolean createRepo(String userAccount,String repoName){
+    public boolean createRepo(Repo repo){
         try {
-            JGitUtils.createRepository(userAccount,repoName);
+            //在本地文件中新建仓库
+            JGitUtils.createRepository(repo.getRepoOwner(),repo.getRepoName());
+
+            //数据库中生成仓库记录
+            repoMapper.insert(repo);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -30,10 +34,10 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
     }
 
     @Override
-    public Repo selectByRepoName(String userAccount,String repoName){
+    public Repo selectByRepoName(Repo repo){
         return repoMapper
                 .selectOne(Wrappers.<Repo>lambdaQuery()
-                .eq(Repo::getRepoOwner,userAccount)
-                .eq(Repo::getRepoName,repoName));
+                .eq(Repo::getRepoOwner,repo.getRepoOwner())
+                .eq(Repo::getRepoName,repo.getRepoName()));
     }
 }
