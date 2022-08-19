@@ -13,103 +13,95 @@ export default {
 </script>
 
 <template>
-    <div class="common-layout">
-      <el-container>
-        <el-header  style="font-size: 30px;padding:0px">
-          <index/>
-        </el-header>
-        <el--header style="margin-top: 10px">
-          <div  class="icon">
-            <el-icon style="margin-left: 20px;vertical-align: middle"><SetUp /></el-icon>
+  <el-container>
+<!--    index-->
+    <el-header  style="padding:0px; margin: 0"><index/></el-header>
+      <div style="background-color: #f6f8fa; padding: 0">
+  <!--    用户名 仓库名-->
+        <div  style="display: flex; margin-left: 20px; margin-top: 20px">
+          <div style="width: 20px; height: 20px; margin-left: 10px; position: relative; top: 8px"><Collection/></div>
+          <div style="margin: 0px 0 0 10px; display: flex">
+            <el-link href="/space" type="primary" style="font-size: 24px; font-family: 'Calibri Light'">{{repo.repoOwner}}</el-link>
+            <div style="font-size: 24px; margin: 0 10px 0 10px">/</div>
+            <el-link type="primary" style="font-size: 24px; font-family: 'Calibri Light'; font-weight: bold">{{repo.repoName}}</el-link>
           </div>
-          <div class="info">
-            <repositoryS style="margin-left: 20px"></repositoryS>
-          </div>
-          <div style="display: flex;justify-content: flex-end">
-          <div class="border">
-            <el-popover v-model:visible="visible" placement="top" :width="160">
-              <p>Are you sure to delete this?</p>
-              <div style="text-align: right; margin: 0">
-                <el-button size="small" text @click="visible = false">cancel</el-button>
-                <el-button size="small" type="primary" @click="visible = false"
-                >confirm</el-button
-                >
-              </div>
-              <template #reference>
-                <el-button style="margin-right: 80px" @click="visible = true">Delete</el-button>
-              </template>
-            </el-popover>
-            <el-popover v-model:visible="visible" placement="top" :width="160">
-              <p>Are you sure to delete this?</p>
-              <div style="text-align: right; margin: 0">
-                <el-button size="small" text @click="visible = false">cancel</el-button>
-                <el-button size="small" type="primary" @click="visible = false">confirm</el-button>
-              </div>
-              <template #reference>
-                <el-button style="margin-right: 100px" @click="visible = true">Delete</el-button>
-              </template>
-            </el-popover>
+          <el-tag style="margin-top: 5px; margin-left: 10px" round type="info">{{repo.repoVisibility}}</el-tag>
 
-     </div>
-          </div>
-        </el--header>
-        <el-header>
-          <el-menu
-              :default-active="activeIndex"
-              class="el-menu-demo"
-              mode="horizontal"
-              @select="handleSelect"
-          >
-            <el-menu-item index="1" @click="go('code')"><el-icon><Edit /></el-icon>Code</el-menu-item>
-            <el-menu-item index="2" @click="go('issues')"><el-icon><ChatSquare /></el-icon>Issues</el-menu-item>
-            <el-menu-item index="3" @click="go('pull')"><el-icon><SetUp /></el-icon>Pull requests</el-menu-item>
-            <el-menu-item index="4" @click="go('settings')"><el-icon><Setting /></el-icon>Settings</el-menu-item>
-          </el-menu>
-        </el-header>
-<!--        <左侧界面>-->
-        <el-container>
-          <el-aside width="1100px">
-            <router-view/>
-          </el-aside>
-<!--          <右侧界面></右侧界面>-->
-          <el-main style="border-left:1px solid ;height:500px;font-size: x-large;font-weight: bold">About</el-main>
-        </el-container>
-      </el-container>
-    </div>
+
+        </div>
+
+  <!--      辅助线-->
+        <div style="width: 60px; height: 2px; position: relative; top: 60px; background-color: #e4e7ed"/>
+  <!--      菜单-->
+        <el-tabs v-model="chooseTab" style="margin-top: 20px; margin-left: 60px" class="demo-tabs">
+          <el-tab-pane label="code" name="code">
+            <template #label>
+              <div style="display: flex;">
+                <div style="width: 20px; height: 20px; position: relative; top: 5px"><Edit /></div>
+                <div style="margin-left: 10px">Code</div>
+              </div>
+            </template>
+          </el-tab-pane>
+
+          <el-tab-pane label="issues" name="issues">
+            <template #label>
+              <div style="display: flex">
+                <div style="width: 20px; height: 20px; position: relative; top: 5px"><ChatSquare /></div>
+                <div style="margin-left: 10px">Issues</div>
+              </div>
+            </template>
+          </el-tab-pane>
+
+          <el-tab-pane label="pull" name="pull">
+            <template #label>
+              <div style="display: flex">
+                <div style="width: 20px; height: 20px; position: relative; top: 5px"><SetUp /></div>
+                <div style="margin-left: 10px">Pull requests</div>
+              </div>
+            </template>
+           </el-tab-pane>
+
+          <el-tab-pane label="settings" name="settings">
+            <template #label>
+              <div style="display: flex">
+                <div style="width: 20px; height: 20px; position: relative; top: 5px"><Setting /></div>
+                <div style="margin-left: 10px">Settings</div>
+              </div>
+            </template>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+
+    <el-container>
+        <router-view/>
+    </el-container>
+  </el-container>
 </template>
 
 
 <script lang="ts" setup>
-  import { ref } from 'vue'
+import {onMounted, reactive, ref, watch, watchEffect} from 'vue'
   import router from '../router'
-  const visible = ref(false)
+  let chooseTab = ref('')
 
-  function go(path){
-    router.push({name: path})
-  }
-  // const activeIndex = ref('1')
-  // const activeIndex2 = ref('1')
-  // const handleSelect = (key: string, keyPath: string[]) => {
-  //   console.log(key, keyPath)
-  // }
+  let repo = reactive({
+    repoOwner: 'ppd-abui',
+    repoName: 'gitter-club',
+    repoBio: '',
+    repoVisibility: 'public',
+    repoFollowers: '',
+    repoIssues: '',
+    repoCollaborators: '',
+  })
+
+  watchEffect(() => router.push({name: chooseTab.value}))
+
 </script>
 
 
-<style>
-.demo-tabs > .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
-}
-.icon,.info {
-  display: inline-block;
-  vertical-align: middle;
-}
-.border
-{
-  display: inline-block;
-
-}
+<style scoped>
+  :deep(.el-tabs__header){
+    margin: 0;
+  }
 
 </style>

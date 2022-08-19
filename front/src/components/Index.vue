@@ -11,12 +11,12 @@ export default {
       background-color="#000000"
       style="height: 60px"
   >
-    <img style="margin-top: 5px ;margin-bottom: 7px;margin-left: 15px; height:80% " src="../assets/white.png">
+    <img @click="goto('home')" style="margin-top: 5px ;margin-bottom: 7px;margin-left: 15px; height:80% " src="../assets/white.png">
 
     <el-input style=" background-color: transparent; border: none; width: 300px; height: 25px; margin-top:17px; margin-left: 15px" v-model="input" placeholder="Search or jump to...">
     </el-input>
 
-    <img @click=goCenter style="position: absolute; right: 20px; margin-top: 5px ; height:80%" src="../assets/white.png">
+    <img @click="goto('space')" style="position: absolute; right: 20px; margin-top: 5px ; height:80%" src="../assets/white.png">
   </el-menu>
 </template>
 
@@ -25,8 +25,8 @@ import { ref } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import router from '../router'
   const input = ref("")
-  function goCenter(){
-    router.push({name: 'space'})
+  function goto(path){
+    router.push({name: path})
   }
 </script>
 
