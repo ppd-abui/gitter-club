@@ -30,20 +30,20 @@ export default {
           <div style="font-size: 30px; font-weight: lighter; position: relative; top: 20px; left: 20px;">/</div>
           <div style="margin-left: 50px; height: 100%;">
             <span style="font-size: 16px; margin-left: 5px; font-family: Calibri; font-weight: bold; ">Repository name</span><span style="color: indianred">*</span>
-            <el-input class="repoInput" v-model="repo.repoName" style="margin-top: 5px; height: 35px"/>
+            <el-input @blur="checkRepoName" placeholder="Please input the repository name" class="repoInput" v-model="repo.repoName" style="margin-top: 5px; height: 35px"/>
           </div>
         </div>
         <div style="font-size: 16px; font-family: 'Calibri Light'; color: #808080">Great repository names are short and memorable. </div>
         <div style="margin-top: 20px;">
           <span style="font-size: 16px; margin-left: 5px; font-family: Calibri; font-weight: bold; ">Description</span>
           <span style="margin-left: 3px; color: #b1b1b1; font-size: 12px">(optional)</span>
-          <el-input class="repoInput" :autosize="{maxRows: 2}" type="textarea" v-model="repo.repoBio" style="margin-top: 5px; height: 35px"/>
+          <el-input placeholder="Give a short introduce to your repository" class="repoInput" :autosize="{maxRows: 2}" type="textarea" v-model="repo.repoBio" style="margin-top: 5px; height: 35px"/>
         </div>
         <el-divider/>
         <div style="height: 100px;">
           <el-radio-group v-model="repo.repoVisibility" style="width: 100%; display: flex">
             <div style="width: 100%">
-              <el-radio label="Public" size="large">
+              <el-radio label="public" size="large">
                 <div style="display: flex">
                   <div style="width: 30px; height: 30px; margin-top: 5px"><Collection/></div>
                   <div style="margin-left: 10px">
@@ -55,7 +55,7 @@ export default {
             </div>
 
             <div style="width: 100%; margin-top: 10px">
-              <el-radio label="Private" size="large">
+              <el-radio label="private" size="large">
                 <div style="display: flex">
                   <div style="width: 30px; height: 30px; margin-top: 5px"><Lock/></div>
                   <div style="margin-left: 10px;">
@@ -83,31 +83,43 @@ export default {
 
 <script lang="ts" setup>
 
-  import {reactive} from "vue";
-  import request from "../utils/request";
-  import type { FormInstance } from 'element-plus';
+import {reactive} from "vue";
+import request from "../utils/request";
+import { ElMessage } from "element-plus";
 
-  let repo = reactive({
-    repoName: '',
-    repoOwner: 'admin',
-    repoBio: '',
-    repoVisibility: 'Public'
-  })
-
-  // const checkRepoName = (rule: any, value: any, callback: any) => {
-  //   if (value === '') {
-  //     callback(new Error('Please input the password'))
-  //   } else {
-  //     request.post('/new', repo)
-  //   }
-  // }
-
-  function CreateRepo(){
-    request.post('/login', repo)
-        .then(res=>{
-          console.log(res)
+function checkRepoName() {
+  if (repo.repoName != ''){
+    request.post('/repo/name', repo).then(res=>{
+      if(res.code===500) {
+        ElMessage({
+          type: 'warning',
+          message: 'The repository ' + repo.repoName + " already exists on this account",
         })
+        repo.repoName=''
+      }
+    })
   }
+}
+
+let repo = reactive({
+  repoName: '',
+  repoOwner: 'ppd-abui',
+  repoBio: '',
+  repoVisibility: 'public'
+})
+
+function createRepo(){
+  if(repo.repoName===''){
+    ElMessage({
+      type:'error',
+      message:'Please input a repository name！'
+    })
+    return
+  }
+  request.post('/repo/new', repo).then(res=>{
+    console.log(res)
+  })
+}
 
 </script>
 
