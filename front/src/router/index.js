@@ -7,21 +7,19 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: () => import('../views/Home.vue')
-    },
-    {
-      path: '/person',
-      name: 'person',
+    },{
+      path: '/space',
+      name: 'space',
       component: () => import('../views/Person.vue'),
-      redirect: '/RepositoryCenter',
       children: [{
-        path: '/RepositoryCenter',
-        name: 'RepositoryCenter',
+        path: '/:tab',
+        name: 'tab',
         component: () => import('../components/RepositoryCenter.vue')
-      },{
-        path: '/StarCenter',
-        name: 'StarCenter',
-        component: () => import('../components/StarCenter.vue')
       }]
+    }, {
+      path: '/new',
+      name: 'createRepo',
+      component: () => import('../views/CreateRepo.vue')
     },{
       path: '/login',
       name: 'login',
