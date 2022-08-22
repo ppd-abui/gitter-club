@@ -26,8 +26,8 @@ export default {
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>create new file</el-dropdown-item>
-              <el-dropdown-item>upload files</el-dropdown-item>
+              <el-dropdown-item @click="goto('newFile')">create new file</el-dropdown-item>
+              <el-dropdown-item @click="goto('uploadFile')">upload files</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -47,7 +47,7 @@ export default {
         </div>
       </div>
 <!--主体-->
-      <div style="z-index: 1; border: #b1b1b1 solid; width: 100%; height: 400px; margin-top: 20px; border-radius: 10px; box-shadow: #e4e7ed 2px 2px;">
+      <div style="z-index: 1; border: #d1d1d1 solid; width: 100%; height: 400px; margin-top: 20px; border-radius: 10px; box-shadow: #e4e7ed 2px 2px 4px;">
 
       </div>
 
@@ -68,6 +68,7 @@ export default {
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import router from '../router'
 
 let ifBranchSwitchShow = ref(false)
 
@@ -76,6 +77,9 @@ function branchSwitchShow(){
 }
 function branchSwitchHide(){
   ifBranchSwitchShow.value=false
+}
+function goto(path){
+  router.replace({name: path})
 }
 </script>
 

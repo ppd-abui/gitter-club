@@ -90,7 +90,7 @@ export default {
 <script lang="ts" setup>
 import {onMounted, reactive, ref, watch, watchEffect} from 'vue'
   import router from '../router'
-  let chooseTab = ref('code')
+  let chooseTab = ref('')
 
   let repo = reactive({
     repoOwner: 'ppd-abui',

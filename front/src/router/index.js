@@ -15,20 +15,10 @@ const router = createRouter({
       path: '/repo',
       name: 'repository',
       component: () => import('../views/Repository.vue'),
-      redirect: '/repo/code',
       children: [{
         path: '/repo/code',
         name: 'code',
-        component: () => import('../components/Code.vue'),
-        children: [{
-          path: '/repo/code/new/:branch',
-          name: 'newFile',
-          component: () => import('../components/RepoCode/NewFile.vue')
-        },{
-          path: '/repo/code/upload/:branch',
-          name: 'uploadFile',
-          component: () => import('../components/RepoCode/NewFile.vue')
-        }]
+        component: () => import('../components/Code.vue')
       },{
         path: '/repo/issues',
         name: 'issues',
@@ -51,6 +41,14 @@ const router = createRouter({
           name: 'collaborator',
           component: () => import('../components/RepoSetting/Collaborator.vue')
         }]
+      },{
+        path: '/repo/new',
+        name: 'newFile',
+        component: () => import('../components/RepoCode/NewFile.vue')
+      },{
+        path: '/repo/upload',
+        name: 'uploadFile',
+        component: () => import('../components/RepoCode/UploadFile.vue')
       }]
     },{
       path: '/search',
