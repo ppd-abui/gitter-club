@@ -34,10 +34,16 @@ public class RepoController {
     }
 
     @PostMapping("/repo/name")
-    public Result<?> checkRepoName(@RequestBody Repo repo){
-        Repo res = repoService.selectByRepoName(repo);
+    public Result<?> checkRepoName(@RequestHeader("token") String token, @RequestBody Repo repo){
+        User resUser = userService.selectByToken(token);
+        if(resUser==null)
+            return new Result<>(500,null,"Create failed!");
 
-        if(res==null)
+        repo.setRepoOwner(resUser.getUserAccount());
+        Repo resRepo = repoService.selectByRepoName(repo);
+
+
+        if(resRepo==null)
             return new Result<>(200,null,"This repository name is available");
         else
             return new Result<>(500,null,"The repository name already exists on this account");

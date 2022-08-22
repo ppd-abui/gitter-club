@@ -9,7 +9,7 @@ const request = axios.create({
 // 可以自请求发送前对请求做一些处理
 // 比如统一加token，对请求参数统一加密
 request.interceptors.request.use(config => {
-    config.headers['Content-Type'] = 'multipart/form-data/application/json;charset=utf-8';
+    config.headers['Content-Type'] = 'application/json;charset=utf-8';
     config.headers['token']=sessionStorage.getItem('token')
 
     return config

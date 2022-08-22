@@ -26,7 +26,15 @@ export default {
             <el-link type="primary" style="font-size: 24px; font-family: 'Calibri Light'; font-weight: bold">{{repo.repoName}}</el-link>
           </div>
           <el-tag style="margin-top: 5px; margin-left: 10px" round type="info">{{repo.repoVisibility}}</el-tag>
-
+          <div style="width: 35%;"></div>
+          <el-button style="position:relative; top: 5px;" @click="changeStar">
+            <el-icon v-if="!isStar"><Star/></el-icon>
+            <el-icon v-if="isStar"><StarFilled/></el-icon>
+            <span style="font-family: Calibri; font-size: 14px; font-weight: bold; margin: 2px 10px 0 10px">Star</span>
+            <div style="width: 20px; height: 20px; border-radius: 50%; background-color: #e7e7e7">
+              <span style="color: black; position: relative; top: 4px">{{1}}</span>
+            </div>
+          </el-button>
 
         </div>
 
@@ -82,7 +90,7 @@ export default {
 <script lang="ts" setup>
 import {onMounted, reactive, ref, watch, watchEffect} from 'vue'
   import router from '../router'
-  let chooseTab = ref('')
+  let chooseTab = ref('code')
 
   let repo = reactive({
     repoOwner: 'ppd-abui',
@@ -95,6 +103,11 @@ import {onMounted, reactive, ref, watch, watchEffect} from 'vue'
   })
 
   watchEffect(() => router.push({name: chooseTab.value}))
+
+  let isStar = ref(true)
+  function changeStar(){
+    isStar.value=!isStar.value
+  }
 
 </script>
 
