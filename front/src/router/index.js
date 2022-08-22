@@ -19,7 +19,16 @@ const router = createRouter({
       children: [{
         path: '/repo/code',
         name: 'code',
-        component: () => import('../components/Code.vue')
+        component: () => import('../components/Code.vue'),
+        children: [{
+          path: '/repo/code/new/:branch',
+          name: 'newFile',
+          component: () => import('../components/RepoCode/NewFile.vue')
+        },{
+          path: '/repo/code/upload/:branch',
+          name: 'uploadFile',
+          component: () => import('../components/RepoCode/NewFile.vue')
+        }]
       },{
         path: '/repo/issues',
         name: 'issues',

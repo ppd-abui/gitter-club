@@ -1,136 +1,84 @@
-<template>
-  <div style="display: flex">
-    <div style="margin-top: 20px;">
-      <el-popover v-model:visible="visible" placement="top" :width="160">
-        <p>Are you sure to delete this?</p>
-        <div style="text-align: right; margin: 0">
-          <el-button size="small" text @click="visible = false">cancel</el-button>
-          <el-button size="small" type="primary" @click="visible = false"
-          >confirm</el-button
-          >
-        </div>
-        <template #reference>
-          <el-button @click="visible = true">master</el-button>
-        </template>
-      </el-popover>
-      <el-icon style="margin-left: 20px"><Operation /></el-icon><el-button>Branch</el-button>
-      <el-icon style="margin-left: 20px"><Flag /></el-icon><el-button>Tags</el-button>
-    </div>
-    <div style="display: flex;margin-left:100px;margin-top:25px;justify-content: flex-end">
-      <el-button  @click="file">Go to file</el-button>
-      <el-popover v-model:visible="visible" placement="top" :width="160">
-        <p>Are you sure to delete this?</p>
-        <div style="text-align: right; margin: 0">
-          <el-button size="small" text @click="visible = false">cancel</el-button>
-          <el-button size="small" type="primary" @click="visible = false"
-          >confirm</el-button
-          >
-        </div>
-        <template #reference>
-          <el-button @click="visible = true">Delete</el-button>
-        </template>
-      </el-popover>
-      <el-button style="margin-left: 20px;">Tags</el-button>
-
-<!--跳转到文件上传页面，待完善-->
-      <el-button onclick="window.location.href='/login'">Upload</el-button>
-<!--跳转到文件上传页面，待完善-->
-
-<!--      文件上传测试-->
-
-      <el-upload
-          auto-upload="false"
-          class="upload-demo"
-          drag
-          action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
-          multiple
-      >
-        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-        <div class="el-upload__text">
-          Drop file here or <em>click to upload</em>
-        </div>
-        <template #tip>
-          <div class="el-upload__tip">
-            jpg/png files with a size less than 500kb
-          </div>
-        </template>
-      </el-upload>
-
-<!--      文件上传测试-->
-    </div>
-  </div>
-<!--    <z主页面>-->
-    <el-table :data="tableData" stripe style="width: 800px;margin-left: 50px">
-      <el-table-column prop="date"  width="180" />
-      <el-table-column prop="name" width="180" />
-      <el-table-column prop="address"  />
-    </el-table>
-  <div class="rectangle2" style="font-size: small;display: flex">
-      Help people interested in this repository understand your project by adding a README.
-       <el-button style="margin-left: 40px">Add a README</el-button>
-  </div>
-</template>
 <script lang="ts">
 export default {
-  name: "Code",
-  methods: {
-    file()
-        { this.$router.push('/search')}
-  }
+  name: "Code"
 }
 </script>
+
+<template>
+  <div style="display: flex; width: 100%">
+    <div style="height: 100%; min-width: 300px; width: 80%; margin-left: 50px; margin-top: 20px">
+      <div style="display: flex">
+        <el-button @click="branchSwitchShow">
+          <el-icon><Operation/></el-icon>
+          main
+          <el-icon><CaretBottom/></el-icon>
+        </el-button>
+        <div style="margin-top: 5px; margin-left: 15px; display: flex">
+          <el-icon style="margin-top: 3px; margin-right: 3px"><Operation/></el-icon>
+          {{1}}
+          <span style="margin-left: 5px; font-family: Calibri; font-size: 18px; color: grey">branch</span>
+        </div>
+        <div style="width: 50%"></div>
+        <el-button style="margin-right: 10px">Go to file</el-button>
+        <el-dropdown>
+          <el-button>Add file
+            <el-icon><CaretBottom/></el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>create new file</el-dropdown-item>
+              <el-dropdown-item>upload files</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+        <el-button type="primary" style="margin-left: 10px">Clone</el-button>
+      </div>
+<!--悬浮窗-->
+      <div v-show="ifBranchSwitchShow" style="z-index: 2; position: absolute;">
+        <div style="box-shadow: #e7e7e7 5px 5px 10px; border: #d1d1d1 solid 1px; border-radius: 5px; margin-top: 10px; width: 300px; background-color: white">
+          <div style="display: flex; margin-top: 10px;">
+            <span style="margin-left:20px; color: grey; font-family: Calibri; font-weight: bold; font-size: 14px;">Switch branches</span>
+            <el-icon @click="branchSwitchHide" color="gray" style="position: absolute; right: 10px;"><CloseBold/></el-icon>
+          </div>
+          <el-divider style="margin-top: 10px; margin-bottom: 10px;"/>
+          <el-input placeholder="Find or create a branch..." style="width: 90%; margin: 0px 14px 0px 14px;"/>
+          <el-divider style="margin-top: 10px; margin-bottom: 0px;"/>
+
+        </div>
+      </div>
+<!--主体-->
+      <div style="z-index: 1; border: #b1b1b1 solid; width: 100%; height: 400px; margin-top: 20px; border-radius: 10px; box-shadow: #e4e7ed 2px 2px;">
+
+      </div>
+
+    </div>
+
+<!--about-->
+    <div style="width: 350px; padding: 0 50px 0 50px">
+      <div style="margin: 50px 0 0 0px; font-family: Calibri; font-size: 24px;">
+        About
+      </div>
+      <div style="font-style: italic; font-family: Calibri; font-size: 18px; color: #b1b1b1; margin-top: 20px">
+        No description, website, or topics provided.
+      </div>
+      <el-divider/>
+    </div>
+  </div>
+</template>
+
 <script lang="ts" setup>
-const visible = ref(false)
-const tableData = [
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-02',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-04',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-  {
-    date: '2016-05-01',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  },
-]
 import { ref } from 'vue'
 
-const value = ref('')
+let ifBranchSwitchShow = ref(false)
 
-const options = [
-  {
-    value: 'Option1',
-    label: 'Option1',
-  },
-  {
-    value: 'Option2',
-    label: 'Option2',
-  }
-]
+function branchSwitchShow(){
+  ifBranchSwitchShow.value=!ifBranchSwitchShow.value
+}
+function branchSwitchHide(){
+  ifBranchSwitchShow.value=false
+}
 </script>
 
 <style scoped>
-.fromHeader .el-select .el-input {
-  border-color: #409EFF;
-  width: 15px;
-  margin-left: 20px;
-}
-.rectangle2{
-  width: 800px;
-  height: 50px;
-  background-color: lightblue;
-  margin-top: 50px;
-  margin-left: 50px;
-  align-items: center;
-}
+
 </style>
