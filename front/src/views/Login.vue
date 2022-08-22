@@ -65,9 +65,8 @@ export default {
   import {ref, reactive} from "vue";
   import request from "../utils/request";
   import type { FormInstance } from 'element-plus'
-  import { ElMessage } from 'element-plus'
   import router from '../router'
-
+  import {ElMessage} from "element-plus";
   const formRef = ref<FormInstance>()
 
   let user = reactive({
@@ -103,22 +102,18 @@ export default {
         console.log('login')
         request.post('/login', user)
             .then(res=>{
-              sessionStorage.setItem('token', res.data)
-              if(res.code===200){
-                ElMessage({
-                  type:'success',
-                  message:'Login successfully!'
-                })
+              if (res.code===200){
+                sessionStorage.setItem('token', res.data)
                 router.push({name: 'home'})
               } else {
+                console.log('error')
                 ElMessage({
-                  type:'error',
-                  message:'Wrong account or password'
+                  type: 'error',
+                  message: '用户名或密码错误'
                 })
                 return false
               }
             })
-
       }
     })
 

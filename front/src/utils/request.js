@@ -10,7 +10,7 @@ const request = axios.create({
 // 比如统一加token，对请求参数统一加密
 request.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
-    config.headers['Authorization']=sessionStorage.getItem('token')
+    config.headers['token']=sessionStorage.getItem('token')
 
     return config
 }, error => {

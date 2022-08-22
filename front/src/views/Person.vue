@@ -36,7 +36,7 @@ export default {
               <img style="width: 100%; object-fit: fill;" src="../assets/black.png">
             </div>
             <div style="width: 350px; margin-left: 50px; position: relative; bottom: 30px">
-              <div style="font-family: 'Calibri Light'; font-size: 20px; color: grey">Slphx</div>
+              <div style="font-family: 'Calibri Light'; font-size: 20px; color: grey">ppd-abui</div>
               <el-button style="width: 80%; margin-top: 10px">Edit Profile</el-button>
             </div>
           </el-aside>

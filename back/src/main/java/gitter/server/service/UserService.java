@@ -10,4 +10,8 @@ public interface UserService extends IService<User> {
     User selectByUserAccount(String userAccount);
     //用户注册
     boolean register(User user);
+    //存储用户token
+    boolean storeToken(String token,User user);
+    //通过token查找用户
+    User selectByToken(String token);
 }
