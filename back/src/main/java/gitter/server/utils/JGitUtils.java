@@ -24,7 +24,6 @@ public class JGitUtils {
             throw new Exception("Repository has already existed!");
         }
 
-
         //不存在则创建一个仓库
         Repository repo = FileRepositoryBuilder.create(new File(repoDir + "/.git"));
         repo.create();

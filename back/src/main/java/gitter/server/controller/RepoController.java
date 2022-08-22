@@ -23,7 +23,9 @@ public class RepoController {
     }
 
     @PostMapping("/repo/name")
-    public Result<?> checkRepoName(@RequestBody Repo repo){
+    public Result<?> checkRepoName(@RequestBody Repo repo,@RequestHeader("token") String token){
+
+
         Repo res = repoService.selectByRepoName(repo);
 
         if(res==null)

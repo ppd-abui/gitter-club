@@ -67,7 +67,7 @@ public class JGit {
         System.out.println(status.getUntracked().toString());
     }
 
-    //分支遍历、创建、删除
+    //分支遍历、创建、删除、签出
     public static void branchOperation() throws IOException, GitAPIException{
 
         Git git = getTestGit();
@@ -77,8 +77,24 @@ public class JGit {
             System.out.println(ref.getName());
         }
 
-        git.branchCreate().setName("test").call();
-        git.branchDelete().setBranchNames("test").call();
+        String branchName = "dev";
+
+        for(Ref ref:refs){
+            if(ref.getName().equals("refs/heads/" + branchName)){
+                System.out.println("Removing branch before");
+                git.branchDelete()
+                        .setBranchNames(branchName)
+                        .setForce(true)
+                        .call();
+                break;
+            }
+        }
+
+        //删除分支
+        git.branchDelete().setBranchNames(branchName).call();
+
+        git.branchCreate().setName(branchName).call();
+        git.checkout().setName(branchName).call();
     }
 
     //查看commit差异
@@ -100,27 +116,11 @@ public class JGit {
 
     public static void main(String[] args) throws IOException, GitAPIException {
         Git git = getTestGit();
-        git.add().addFilepattern(".").call();
 
-        List<Ref> refs = git.branchList().call();
-        for(Ref ref:refs){
-            if(ref.getName().equals("refs/heads/dev")){
-                System.out.println("Removing branch before");
-                git.branchDelete()
-                        .setBranchNames("dev")
-                        .setForce(true)
-                        .call();
-                break;
-            }
-        }
+        //添加所有文件
+        //git.add().addFilepattern(".").call();
 
-        git.branchCreate()
-                .setName("dev")
-                .call();
-
-        git.checkout()
-                .setName("dev")
-                .call();
+        System.out.println(System.getProperty("user.dir") + "/../repository");
 
     }
 }
