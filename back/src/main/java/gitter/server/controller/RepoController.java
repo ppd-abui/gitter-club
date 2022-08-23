@@ -42,10 +42,27 @@ public class RepoController {
         repo.setRepoOwner(resUser.getUserAccount());
         Repo resRepo = repoService.selectByRepoName(repo);
 
-
         if(resRepo==null)
             return new Result<>(200,null,"This repository name is available");
         else
             return new Result<>(500,null,"The repository name already exists on this account");
     }
+
+
+    @GetMapping("/repo/name")
+    public Result<?> checkRepoName(@RequestParam String repoOwner,@RequestParam String repoName){
+        Repo repo = new Repo();
+        repo.setRepoOwner(repoOwner);
+        repo.setRepoName(repoName);
+        Repo res = repoService.selectByRepoName(repo);
+
+        if(res==null)
+            return new Result<>(200,null,"This repository name is available");
+        else
+            return new Result<>(500,null,"The repository name already exists on this account");
+    }
+    /**
+     * type:repository, user
+     * key:查询关键字
+     */
 }

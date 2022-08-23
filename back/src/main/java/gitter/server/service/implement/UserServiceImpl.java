@@ -47,7 +47,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean storeToken(String token,User user){
         try{
             userMap.put(token,user);
-            System.out.println(userMap.get(token));
             return true;
         } catch (Exception e){
             e.printStackTrace();
