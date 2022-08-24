@@ -5,9 +5,11 @@ import gitter.server.entity.Repo;
 import gitter.server.entity.User;
 import gitter.server.service.RepoService;
 import gitter.server.service.UserService;
+import gitter.server.utils.JGitUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping()
@@ -20,49 +22,72 @@ public class RepoController {
     UserService userService;
 
     @PostMapping("/repo/new")
-    public Result<?> newRepo(@RequestHeader("token") String token, @RequestBody Repo repo){
+    public Result<?> newRepo(@RequestHeader("token") String token, @RequestBody Repo repo) {
         User res = userService.selectByToken(token);
-        if(res==null)
-            return new Result<>(500,null,"Create failed!");
+        if (res == null)
+            return new Result<>(500, null, "Create failed!");
 
         repo.setRepoOwner(res.getUserAccount());
 
-        if(repoService.createRepo(repo))
-            return new Result<>(200,null,"Create successfully!");
+        if (repoService.createRepo(repo))
+            return new Result<>(200, null, "Create successfully!");
         else
-            return new Result<>(500,null,"Create failed!");
+            return new Result<>(500, null, "Create failed!");
     }
 
     @PostMapping("/repo/name")
-    public Result<?> checkRepoName(@RequestHeader("token") String token, @RequestBody Repo repo){
+    public Result<?> checkRepoName(@RequestHeader("token") String token, @RequestBody Repo repo) {
         User resUser = userService.selectByToken(token);
-        if(resUser==null)
-            return new Result<>(500,null,"Create failed!");
+        if (resUser == null)
+            return new Result<>(500, null, "Create failed!");
 
         repo.setRepoOwner(resUser.getUserAccount());
         Repo resRepo = repoService.selectByRepoName(repo);
 
-        if(resRepo==null)
-            return new Result<>(200,null,"This repository name is available");
+        if (resRepo == null)
+            return new Result<>(200, null, "This repository name is available");
         else
-            return new Result<>(500,null,"The repository name already exists on this account");
+            return new Result<>(500, null, "The repository name already exists on this account");
     }
 
 
     @GetMapping("/repo/name")
-    public Result<?> checkRepoName(@RequestParam String repoOwner,@RequestParam String repoName){
+    public Result<?> checkRepoName(@RequestParam String repoOwner, @RequestParam String repoName) {
         Repo repo = new Repo();
         repo.setRepoOwner(repoOwner);
         repo.setRepoName(repoName);
         Repo res = repoService.selectByRepoName(repo);
 
-        if(res==null)
-            return new Result<>(200,null,"This repository name is available");
+        if (res == null)
+            return new Result<>(200, null, "This repository name is available");
         else
-            return new Result<>(500,null,"The repository name already exists on this account");
+            return new Result<>(500, null, "The repository name already exists on this account");
     }
-    /**
-     * type:repository, user
-     * key:查询关键字
-     */
+
+    @PostMapping("/url")
+    public Result<?> getUrl(@RequestBody Repo repo){
+
+        try {
+            String url = JGitUtils.getRepoUrl(repo);
+            return new Result<>(200,url,"");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500,"error","获取失败!");
+        }
+    }
+
+    @GetMapping("/repo/info")
+    public Result<?> getRepos(@RequestHeader("token") String token){
+        try{
+            User user = userService.selectByToken(token);
+            Repo repo = new Repo();
+            repo.setRepoOwner(user.getUserAccount());
+            List<Repo> repos = repoService.selectByRepoOwner(repo);
+            return new Result<>(200,repos,"获取成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500,null,"获取失败！");
+        }
+    }
+
 }
