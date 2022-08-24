@@ -39,19 +39,11 @@ const routes = [
       console.log('has token')
       console.log('to',to.path)
       if (to.matched.length === 0) {
-        let s = to.path
-        let endList = []
-        for (let i = 0; i < s.length; i++) {
-          if (s[i] === '/') {
-            endList.push(i)
-          }
-        }
-        let userAccount = ''
-        if (endList.length > 1) {
-          userAccount = to.path.substring(endList[0] + 1, endList[1])
-        } else {
-          userAccount = to.path.substring(endList[0] + 1, s.length)
-        }
+        let path = to.path
+        let regexp = /(\w)+/g
+        path = path.match(regexp)
+
+        let userAccount = path[0]
 
         //addAccount
         request.get('/register/account', {
@@ -66,24 +58,24 @@ const routes = [
               path: '/' + userAccount,
               name: userAccount + 'space',
               component: () => import('../views/Person.vue'),
+              children: [{
+                path: ':tab',
+              }]
             })
             console.log('added account route',router.getRoutes())
-            if (endList.length===1) next(to.path)
+            if (path.length===1) next(to.path)
           } else if (res.code === 200) {
             console.log('no account')
           }
         })
-        if (endList.length > 1) {
-          let repoName = ''
+        if (path.length > 1) {
+          let repoName = path[1]
           let repoOwner = userAccount
-          if (endList.length===2) endList.push(to.path.length)
-          repoName = to.path.substring(endList[1] + 1, endList[2])
-          console.log('add repo route')
 
           request.get('/repo/name',{
             params: {
-              repoOwner: 'admin',
-              repoName: 'test'
+              repoOwner: repoOwner,
+              repoName: repoName
             }
           }).then(res => {
             //addRepo
@@ -96,7 +88,10 @@ const routes = [
                 redirect: '/' + repoOwner + '/' + repoName + '/code',
                 children: [{
                   path: 'code',
-                  component: () => import('../components/Code.vue')
+                  component: () => import('../components/Code.vue'),
+                  children: [{
+                    path: ':tab*'
+                  }]
                 }, {
                   path: 'issues',
                   component: () => import('../components/Issues.vue'),
@@ -140,37 +135,6 @@ const routes = [
     }
   })
 
-  // function getRouter(routerMap) {
-  //   let accessedRouters = []
-  //   routerMap.forEach((item, index) => {
-  //     accessedRouters.push({
-  //       path: item.path,
-  //       name: item.name,
-  //       redirect: item.redirect,
-  //       component: () => import(item.component)
-  //     })
-  //     if (item.children && item.children.length) {
-  //       accessedRouters[index].children = getRouter(item.children)
-  //     }
-  //   })
-  //   return accessedRouters
-  // }
-  function RouterAddHelp(routeAdds){
-    console.log('addRoute '+ routeAdds.path)
-    router.addRoute({
-      path: routeAdds.path,
-      name: routeAdds.name,
-      component: () => import(routeAdds.component),
-      children: routeAdds.children
-    })
-    if (routeAdds.children!=undefined)
-      if (routeAdds.children.length>0){
-        for (let i=0; i<routeAdds.children.length; i++){
-          console.log(routeAdds.children[i])
-          RouterAddHelp(routeAdds.children[i])
-        }
-      }
-  }
 
   function saveData(name, data) {
     localStorage.setItem(name, JSON.stringify(data))
@@ -191,33 +155,6 @@ const routes = [
       localStorage.removeItem(name)
     }
   }
-  // router.beforeEach((to, from, next) =>{
-  //   console.log(getRouter)
-  //   if (!getRouter){
-  //     console.log(1)
-  //     if (!getObjArr('router')){
-  //       getRouter = catRouter
-  //       saveObjArr('router',getRouter)
-  //
-  //       routerGo(to, next)
-  //     } else {
-  //       getRouter = getObjArr('router')
-  //       routerGo(to,next)
-  //     }
-  //   } else if (to.matched.length == 0){
-  //     next("/404")
-  //   } else {
-  //     next()
-  //   }
-  // })
-
-  // function  routerGo(to, next){
-  //   // getRouter = filterAsyncRouter(getRouter)
-  //   router.addRoute(getRouter)
-  //   console.log(getRouter[0].path)
-  //
-  //   router.push({path: getRouter[0].path})
-  // }
 
 
 export default router

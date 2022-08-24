@@ -175,7 +175,8 @@ function branchSwitchHide(){
     }
   }).then(res => {
     console.log(res)
-    if (res === 200){
+    if (res.code === 200){
+      pathData.value=res.data
     }
   })
 
