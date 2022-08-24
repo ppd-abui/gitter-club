@@ -5,8 +5,8 @@ export default {
 </script>
 
 <template>
-  <el-container style = "margin-left: 20px">
-    <el-aside width = "300px">
+  <el-container style = "margin-left: 20px;margin-top: 10px">
+    <el-aside width = "200px">
       <el-menu
         default-active="choose"
         >

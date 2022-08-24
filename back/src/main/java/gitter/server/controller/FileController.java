@@ -2,6 +2,7 @@ package gitter.server.controller;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
+import gitter.server.common.FileType;
 import gitter.server.common.Result;
 import gitter.server.service.UserService;
 import gitter.server.utils.JGitUtils;
@@ -16,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,16 +92,26 @@ public class FileController {
     }
 
     @GetMapping("/tree")
-    public void getFiles(@RequestParam String repoOwner,@RequestParam String repoName,
-                         @RequestParam String branchName,@RequestParam String source){
-        String path = baseDir + repoOwner + '/' + repoName + '/' + source;
+    public Result<?> getFiles(@RequestParam String repoOwner,@RequestParam String repoName,
+                         @RequestParam String branch,@RequestParam String suffixDir){
+        String path = baseDir + repoOwner + '/' + repoName + '/' + suffixDir;
         File file = new File(path);
         if (file.isFile()){
-
+            return new Result<>(200,file,"");
         }
 
-//        File[] files = file.listFiles();
-//        Map<Object,Object> fileMap = new HashMap<>();
+        File[] files = file.listFiles();
+        List<FileType> fileTypes = new ArrayList<>();
+        assert files != null;
 
+        for(File f:files){
+            if (f.isHidden())
+                continue;
+            else if (f.isDirectory())
+                fileTypes.add(new FileType("Dir",f.getName()));
+            else if (f.isFile())
+                fileTypes.add(new FileType("File",f.getName()));
+        }
+        return new Result<>(200,fileTypes,"successfully!");
     }
 }
