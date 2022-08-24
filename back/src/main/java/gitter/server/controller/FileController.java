@@ -12,9 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,5 +87,19 @@ public class FileController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @GetMapping("/tree")
+    public void getFiles(@RequestParam String repoOwner,@RequestParam String repoName,
+                         @RequestParam String branchName,@RequestParam String source){
+        String path = baseDir + repoOwner + '/' + repoName + '/' + source;
+        File file = new File(path);
+        if (file.isFile()){
+
+        }
+
+//        File[] files = file.listFiles();
+//        Map<Object,Object> fileMap = new HashMap<>();
+
     }
 }

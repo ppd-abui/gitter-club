@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements RepoService {
@@ -39,5 +40,12 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
                 .selectOne(Wrappers.<Repo>lambdaQuery()
                 .eq(Repo::getRepoOwner,repo.getRepoOwner())
                 .eq(Repo::getRepoName,repo.getRepoName()));
+    }
+
+    @Override
+    public List<Repo> selectByRepoOwner(Repo repo){
+        return repoMapper
+                .selectList(Wrappers.<Repo>lambdaQuery()
+                .eq(Repo::getRepoOwner,repo.getRepoOwner()));
     }
 }
