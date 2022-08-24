@@ -123,12 +123,16 @@ import {ElMessage} from "element-plus";
   path = path.match(regexp)
 
   let query = router.currentRoute.value.query
-  let branch, suffixDir
-  if (query !== undefined) {
-    branch=query.branch
-    suffixDir=query.suffixDir
+  let branch=''
+  let suffixDir=''
+
+  if (JSON.stringify(query)!=='{}') {
+    branch=''+query.branch
+    suffixDir=''+query.suffixDir
   }
-  if (branch===undefined) branch='master'
+  if (branch==='') branch='master'
+
+  console.log('branch',branch,suffixDir)
 
   let repo = reactive({
     repoId: '',
@@ -160,50 +164,56 @@ function branchSwitchHide(){
   ifBranchSwitchShow.value=false
 }
 
-const pathData = ref([
-  {fileType: 'Dir', fileName: '.idea'},
-  {fileType: 'Dir', fileName: 'back'},
-  {fileType: 'Dir', fileName: 'front'},
-  {fileType: 'File', fileName: '.gitignore'},
-  {fileType: 'File', fileName: 'README.md'},
-  {fileType: 'File', fileName: 'package-lock.json'},
-])
+  const pathData = ref([])
 
-let url=ref('')
-let ifCloneShow = ref(false)
-function cloneShow(){
-  ifCloneShow.value=!ifCloneShow.value
-  request.get('/url', {
+  request.get('/tree',{
     params: {
       repoOwner: path[0],
-      repoName: path[1]
+      repoName: path[1],
+      branch: branch,
+      suffixDir: suffixDir
     }
-  }).then(res=>{
-    url.value = res.data
+  }).then(res => {
+    console.log(res)
+    if (res === 200){
+    }
   })
-}
-function cloneHide(){
-  ifCloneShow.value=false
-}
 
-function copyUrl(){
-  var url_ = document.getElementById('url')
-  url_.select()
-  document.execCommand("Copy")
-  ElMessage({
-    type:'success',
-    message:'Copy successfully!'
-  })
-}
+  let url=ref('')
+  let ifCloneShow = ref(false)
+  function cloneShow(){
+    ifCloneShow.value=!ifCloneShow.value
+    request.get('/url', {
+      params: {
+        repoOwner: path[0],
+        repoName: path[1]
+      }
+    }).then(res=>{
+      url.value = res.data
+    })
+  }
+  function cloneHide(){
+    ifCloneShow.value=false
+  }
 
-function addQuery(queryObj){
-  router.push({path: router.currentRoute.value.fullPath,
-    query: {branch: branch, suffixDir: queryObj}})
-}
+  function copyUrl(){
+    var url_ = document.getElementById('url')
+    url_.select()
+    document.execCommand("Copy")
+    ElMessage({
+      type:'success',
+      message:'Copy successfully!'
+    })
+  }
 
-function goto(direct){
-  router.push('/'+path[0]+'/'+path[1]+'/'+direct)
-}
+  function addQuery(queryObj){
+    router.push({path: router.currentRoute.value.fullPath,
+      query: {branch: branch, suffixDir: queryObj}})
+  }
+
+  function goto(direct){
+    router.push('/'+path[0]+'/'+path[1]+'/'+direct)
+  }
 </script>
 
 <style scoped>
