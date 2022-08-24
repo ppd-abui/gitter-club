@@ -95,7 +95,7 @@ let isAbleIcon = ref('')
 function checkRepoName() {
   if (repo.repoName != ''){
     request.post('/repo/name', repo).then(res=>{
-      if(res.code===500) {
+      if(res.code===200) {
         ElMessage({
           type: 'warning',
           message: 'The repository ' + repo.repoName + " already exists on this account",

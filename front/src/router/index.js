@@ -2,67 +2,6 @@ import {createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
 import request from "../utils/request";
 import {ElMessage} from "element-plus";
 
-//   path: '/space',
-//   name: 'space',
-//   component: () => import('../views/Person.vue'),
-//   children: [{
-//     path: '/space/:tab',
-//     name: 'tab',
-//     component: () => import('../components/RepositoryCenter.vue')
-//   }]
-// }
-// {
-//   path: '/repo',
-//   name: 'repository',
-//   component: () => import('../views/Repository.vue'),
-//   children: [{
-//     path: 'code',
-//     name: 'code',
-//     component: () => import('../components/Code.vue')
-//   },{
-//     path: 'issues',
-//     name: 'issues',
-//     component: () => import('../components/Issues.vue')
-//   },{
-//     path: 'pull',
-//     name: 'pull',
-//     component: () => import('../components/Pull.vue')
-//   },{
-//     path: 'settings',
-//     name: 'settings',
-//     component: () => import('../components/RepositorySetting.vue'),
-//     redirect: '/repo/settings/general',
-//     children: [{
-//       path: 'general',
-//       name: 'general',
-//       component: () => import('../components/RepoSetting/General.vue')
-//     },{
-//       path: 'collaborator',
-//       name: 'collaborator',
-//       component: () => import('../components/RepoSetting/Collaborator.vue')
-//     }]
-//   },{
-//     path: 'new',
-//     name: 'newFile',
-//     component: () => import('../components/RepoCode/NewFile.vue')
-//   },{
-//     path: 'upload',
-//     name: 'uploadFile',
-//     component: () => import('../components/RepoCode/UploadFile.vue')
-//   }]
-// }
-
-let catRouter = [{
-  path: '/slphx',
-  name: 'space',
-  component: () => import('../views/Person.vue'),
-  children: [{
-    path: '/slphx/:tab',
-    name: 'tab',
-    component: () => import('../components/RepositoryCenter.vue')
-  }]
-}]
-
 const routes = [
     {
       path: '/',
@@ -96,10 +35,9 @@ const routes = [
   })
 
   router.beforeEach((to, from, next)=>{
-    if (getData('token')){
+    if (localStorage.getItem('token')){
       console.log('has token')
-      console.log(to.path)
-      console.log(to.matched.length)
+      console.log('to',to.path)
       if (to.matched.length === 0) {
         let s = to.path
         let endList = []
@@ -114,25 +52,92 @@ const routes = [
         } else {
           userAccount = to.path.substring(endList[0] + 1, s.length)
         }
-        console.log(userAccount)
-        requestAdd(endList, userAccount).then(r => {})
-      }
 
-      if (!getData('routeAdd')) next()
-      else {
-        let routeAdds= getData('routeAdd')
-        console.log('add '+routeAdds.path)
-        // routeAdds = getRouter(routeAdds)
-        RouterAddHelp(routeAdds)
-        deleteData('routeAdd')
-        next()
-      }
+        //addAccount
+        request.get('/register/account', {
+          params: {
+            userAccount: userAccount
+          }
+        }).then(res => {
+          //接口为查重接口，存在重复返回500
+          if (res.code === 500) {
+            console.log('add account route')
+            router.addRoute({
+              path: '/' + userAccount,
+              name: userAccount + 'space',
+              component: () => import('../views/Person.vue'),
+            })
+            console.log('added account route',router.getRoutes())
+            if (endList.length===1) next(to.path)
+          } else if (res.code === 200) {
+            console.log('no account')
+          }
+        })
+        if (endList.length > 1) {
+          let repoName = ''
+          let repoOwner = userAccount
+          if (endList.length===2) endList.push(to.path.length)
+          repoName = to.path.substring(endList[1] + 1, endList[2])
+          console.log('add repo route')
+
+          request.get('/repo/name',{
+            params: {
+              repoOwner: 'admin',
+              repoName: 'test'
+            }
+          }).then(res => {
+            //addRepo
+            if (res.code === 200) {
+              console.log('add repo route')
+              router.addRoute({
+                path: '/' + repoOwner + '/' + repoName,
+                name: repoName + 'repo',
+                component: () => import('../views/Repository.vue'),
+                redirect: '/' + repoOwner + '/' + repoName + '/code',
+                children: [{
+                  path: 'code',
+                  component: () => import('../components/Code.vue')
+                }, {
+                  path: 'issues',
+                  component: () => import('../components/Issues.vue'),
+                  children: [{
+                    path: 'new',
+                    component: () => import('../components/CreateIssue.vue')
+                  }]
+                }, {
+                  path: 'pull',
+                  component: () => import('../components/Pull.vue')
+                }, {
+                  path: 'settings',
+                  component: () => import('../components/RepositorySetting.vue'),
+                  redirect: '/' + repoOwner + '/' + repoName + '/settings/general',
+                  children: [{
+                    path: 'general',
+                    component: () => import('../components/RepoSetting/General.vue')
+                  }, {
+                    path: 'collaborator',
+                    component: () => import('../components/RepoSetting/Collaborator.vue')
+                  }]
+                }, {
+                  path: 'upload',
+                  component: () => import('../components/RepoCode/UploadFile.vue')
+                }, {
+                  path: 'new',
+                  component: () => import('../components/RepoCode/NewFile.vue')
+                }]
+              })
+            }
+            console.log('added repo route',router.getRoutes())
+            next(to.path)
+          })
+        }
+
+      } else next()
     } else {
       console.log('has not token')
       if (to.path==='/login') next()
       else next('/login')
     }
-    if (to.matched.length===0) router.push('/404')
   })
 
   // function getRouter(routerMap) {
@@ -165,32 +170,6 @@ const routes = [
           RouterAddHelp(routeAdds.children[i])
         }
       }
-  }
-
-  async function requestAdd(endList, userAccount){
-    await request.get('/register/account', {
-      params: {
-        userAccount: userAccount
-      }
-    }).then(res => {
-      console.log(res.code)
-      //接口为查重接口，存在重复返回500
-      if (res.code === 500) {
-        console.log('has account')
-        localStorage.setItem('routeAdd', JSON.stringify({
-          path: '/' + userAccount,
-          name: userAccount + 'space',
-          component: '../views/Person.vue',
-          // children: [{
-          //   path: '/'+userAccount+'/:tab',
-          //   name: 'tab',
-          // }]
-        }))
-        if (endList.length === 1) router.push('/' + userAccount)
-      } else if (res.code === 200) {
-        console.log('no account')
-      }
-    })
   }
 
   function saveData(name, data) {
