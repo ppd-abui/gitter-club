@@ -1,5 +1,6 @@
 package gitter.server.utils;
 
+import gitter.server.entity.Repo;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
@@ -12,7 +13,7 @@ import java.nio.file.Paths;
 
 public class JGitUtils {
 
-    private final static String baseDir = "D:/Coding/Repo";
+    private final static String baseDir = "E:/idea/repository/";
 
     //创建并初始化Git仓库, dir为创建的仓库路径：用户名/仓库名
     public static Git createRepository(String userAccount, String repoName) throws Exception{
@@ -39,5 +40,9 @@ public class JGitUtils {
                .build();
 
        return new Git(repository);
+   }
+
+   public static String getRepoUrl(Repo repo){
+        return baseDir + repo.getRepoOwner() + "/" + repo.getRepoName();
    }
 }

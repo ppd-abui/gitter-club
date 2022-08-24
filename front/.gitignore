@@ -26,3 +26,5 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+application.properties
+pom.xml
