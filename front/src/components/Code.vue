@@ -26,8 +26,8 @@ export default {
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>create new file</el-dropdown-item>
-              <el-dropdown-item>upload files</el-dropdown-item>
+              <el-dropdown-item @click="goto('new')">create new file</el-dropdown-item>
+              <el-dropdown-item @click="goto('upload')">upload files</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -96,7 +96,8 @@ export default {
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import {pushScopeId, reactive, ref} from 'vue'
+import router from '../router'
 
 let ifBranchSwitchShow = ref(false)
 
@@ -105,6 +106,20 @@ function branchSwitchShow(){
 }
 function branchSwitchHide(){
   ifBranchSwitchShow.value=false
+}
+
+let repo = reactive({
+  repoOwner: 'admin',
+  repoName: 'test',
+  repoBio: '',
+  repoVisibility: 'public',
+  repoFollowers: '',
+  repoIssues: '',
+  repoCollaborators: '',
+})
+
+function goto(path){
+  router.push('/'+repo.repoOwner+'/'+repo.repoName+'/'+path)
 }
 </script>
 

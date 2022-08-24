@@ -6,6 +6,7 @@ export default {
 
 <template>
 <!--  upload area-->
+  <div>
   <div style="width: 1200px;height: 250px;margin-left: 150px;margin-top: 65px;border: #dddddd 1px solid;border-radius: 10px">
     <el-upload
         ref="uploadRef"
@@ -46,6 +47,7 @@ export default {
     <el-button color="#f6f8fa" @click="cancel" style="color: #cf222e; border: 1px #ccc solid">
       Cancel
     </el-button>
+  </div>
   </div>
 </template>
 

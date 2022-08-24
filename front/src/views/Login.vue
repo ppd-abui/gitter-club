@@ -99,12 +99,23 @@ export default {
     if (!formEl) return
     formEl.validate((valid) => {
       if (valid) {
-        console.log('login')
         request.post('/login', user)
             .then(res=>{
               if (res.code===200){
-                sessionStorage.setItem('token', res.data)
-                router.push({name: 'home'})
+                localStorage.setItem('token', JSON.stringify(res.data))
+                localStorage.setItem('userAccount', JSON.stringify(user.userAccount))
+                console.log(user.userAccount)
+                localStorage.setItem('routeAdd', JSON.stringify({
+                  path: '/'+user.userAccount,
+                  name: user.userAccount+'space',
+                  component: '../views/Person.vue',
+                  children: [{
+                    path: '/space/:tab',
+                    name: 'tab',
+                  }]
+                }))
+                console.log(user.userAccount+'login')
+                router.push('/')
               } else {
                 console.log('error')
                 ElMessage({

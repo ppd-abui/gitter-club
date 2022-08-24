@@ -16,7 +16,7 @@ export default {
     <el-input style=" background-color: transparent; border: none; width: 300px; height: 25px; margin-top:17px; margin-left: 15px" v-model="input" placeholder="Search or jump to...">
     </el-input>
 
-    <img @click="goto('space')" style="position: absolute; right: 20px; margin-top: 5px ; height:80%" src="../assets/white.png">
+    <img @click="gotoSpace()" style="position: absolute; right: 20px; margin-top: 5px ; height:80%" src="../assets/white.png">
   </el-menu>
 </template>
 
@@ -27,6 +27,9 @@ import router from '../router'
   const input = ref("")
   function goto(path){
     router.push({name: path})
+  }
+  function gotoSpace(){
+    router.push('/'+JSON.parse(localStorage.getItem('userAccount')))
   }
 </script>
 

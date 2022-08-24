@@ -44,7 +44,7 @@ export default {
         <el-tabs v-model="chooseTab" style="margin-top: 20px; margin-left: 60px" class="demo-tabs">
           <el-tab-pane label="code" name="code">
             <template #label>
-              <div style="display: flex;">
+              <div @click="goto('code')" style="display: flex;">
                 <div style="width: 20px; height: 20px; position: relative; top: 5px"><Edit /></div>
                 <div style="margin-left: 10px">Code</div>
               </div>
@@ -53,7 +53,7 @@ export default {
 
           <el-tab-pane label="issues" name="issues">
             <template #label>
-              <div style="display: flex">
+              <div @click="goto('issues')" style="display: flex">
                 <div style="width: 20px; height: 20px; position: relative; top: 5px"><ChatSquare /></div>
                 <div style="margin-left: 10px">Issues</div>
               </div>
@@ -62,7 +62,7 @@ export default {
 
           <el-tab-pane label="pull" name="pull">
             <template #label>
-              <div style="display: flex">
+              <div @click="goto('pull')" style="display: flex">
                 <div style="width: 20px; height: 20px; position: relative; top: 5px"><SetUp /></div>
                 <div style="margin-left: 10px">Pull requests</div>
               </div>
@@ -71,7 +71,7 @@ export default {
 
           <el-tab-pane label="settings" name="settings">
             <template #label>
-              <div style="display: flex">
+              <div @click="goto('settings')" style="display: flex">
                 <div style="width: 20px; height: 20px; position: relative; top: 5px"><Setting /></div>
                 <div style="margin-left: 10px">Settings</div>
               </div>
@@ -89,12 +89,13 @@ export default {
 
 <script lang="ts" setup>
 import {onMounted, reactive, ref, watch, watchEffect} from 'vue'
-  import router from '../router'
+import router from '../router'
+import {useRouter} from "vue-router";
   let chooseTab = ref('')
 
   let repo = reactive({
-    repoOwner: 'ppd-abui',
-    repoName: 'gitter-club',
+    repoOwner: 'admin',
+    repoName: 'test',
     repoBio: '',
     repoVisibility: 'public',
     repoFollowers: '',
@@ -102,7 +103,10 @@ import {onMounted, reactive, ref, watch, watchEffect} from 'vue'
     repoCollaborators: '',
   })
 
-  watchEffect(() => router.push({name: chooseTab.value}))
+
+  function goto(pathName){
+    router.push('/'+repo.repoOwner+'/'+repo.repoName+'/'+pathName)
+  }
 
   let isStar = ref(true)
   function changeStar(){
