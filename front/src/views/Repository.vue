@@ -90,20 +90,35 @@ export default {
 <script lang="ts" setup>
 import {onMounted, reactive, ref, watch, watchEffect} from 'vue'
 import router from '../router'
+import request from '../utils/request.js'
 import {useRouter} from "vue-router";
+
   let chooseTab = ref('')
 
   let repo = reactive({
-    repoOwner: 'admin',
-    repoName: 'test',
+    repoId: '',
+    repoName: '',
+    repoOwner: '',
     repoBio: '',
-    repoVisibility: 'public',
-    repoFollowers: '',
-    repoIssues: '',
-    repoCollaborators: '',
+    repoVisibility: '',
   })
 
+  let path = router.currentRoute.value.fullPath
+  let regexp = /(\w)+/g
+  path = path.match(regexp)
 
+  request.get('/repo/name',{
+    params: {
+      repoOwner: path[0],
+      repoName: path[1]
+    }
+  }).then(res => {
+    repo.repoId=res.data.repoId
+    repo.repoName=res.data.repoName
+    repo.repoOwner=res.data.repoOwner
+    repo.repoBio=res.data.repoBio
+    repo.repoVisibility=res.data.repoVisibility
+  })
   function goto(pathName){
     router.push('/'+repo.repoOwner+'/'+repo.repoName+'/'+pathName)
   }
@@ -111,6 +126,7 @@ import {useRouter} from "vue-router";
   let isStar = ref(true)
   function changeStar(){
     isStar.value=!isStar.value
+    console.log(repo)
   }
 
 </script>
