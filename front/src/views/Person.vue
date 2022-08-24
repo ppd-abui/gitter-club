@@ -62,7 +62,7 @@ export default {
   let tab = ref('RepositoryCenter')
 
   function go(path){
-    router.push({name: 'space', query: {tab: path}})
+    router.push({path: '/'+JSON.parse(localStorage.getItem('userAccount')), query: {tab: path}})
     tab.value=path
   }
   const route=useRoute()

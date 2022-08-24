@@ -20,7 +20,7 @@
       <el-input style="width: 500px;" v-model="input"  placeholder="Please input" />
       <el-button style="margin-left: 20px;border-radius: 10px">Labels</el-button>
       <el-button style="border-radius: 10px">Milestones</el-button>
-      <el-button style="background-color: aquamarine;border-radius: 10px" @click="issue('/repo/newissue')">New issue</el-button>
+      <el-button style="background-color: aquamarine;border-radius: 10px" @click="issue('new')">New issue</el-button>
     </div>
     <div class="rectangle2">
         <el-icon style="vertical-align: -10%;margin-left: 10px"><Aim /></el-icon>
@@ -46,10 +46,21 @@ export default {
 </script>
 <script setup>
 import router from '../router'
+import {reactive} from "vue";
+
+let repo = reactive({
+  repoOwner: 'admin',
+  repoName: 'test',
+  repoBio: '',
+  repoVisibility: 'public',
+  repoFollowers: '',
+  repoIssues: '',
+  repoCollaborators: '',
+})
+
 function issue(path)
 {
-  console.log(path)
-  router.push(path)
+  router.push('/'+repo.repoOwner+'/'+repo.repoName+'/issues/'+path)
 }
 </script>
 <style scoped>

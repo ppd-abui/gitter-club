@@ -26,15 +26,12 @@ export default {
           </el-button>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>create new file</el-dropdown-item>
-              <el-dropdown-item>upload files</el-dropdown-item>
+              <el-dropdown-item @click="goto('new')">create new file</el-dropdown-item>
+              <el-dropdown-item @click="goto('upload')">upload files</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-        <el-button type="primary" style="margin-left: 10px" @click="cloneShow">
-          Clone
-          <el-icon><CaretBottom/></el-icon>
-        </el-button>
+        <el-button type="primary" style="margin-left: 10px">Clone</el-button>
       </div>
 <!--悬浮窗-->
       <div v-show="ifBranchSwitchShow" style="z-index: 2; position: absolute;">
@@ -99,17 +96,10 @@ export default {
 </template>
 
 <script lang="ts" setup>
-import {createApp, reactive, ref} from 'vue'
-import request from "../utils/request.js"
-import {ElMessage} from "element-plus";
+import {pushScopeId, reactive, ref} from 'vue'
+import router from '../router'
 
 let ifBranchSwitchShow = ref(false)
-let ifCloneShow = ref(false)
-let url = ref("")
-let repo = reactive({
-  repoOwner:'admin',
-  repoName:'testToken'
-})
 
 function branchSwitchShow(){
   ifBranchSwitchShow.value=!ifBranchSwitchShow.value
@@ -118,25 +108,19 @@ function branchSwitchHide(){
   ifBranchSwitchShow.value=false
 }
 
-function cloneShow(){
-  ifCloneShow.value=!ifCloneShow.value
-  request.post('/url',repo).then(res=>{
-    console.log(res.data)
-    url.value = res.data
-  })
-}
-function cloneHide(){
-  ifCloneShow.value=false
-}
+let repo = reactive({
+  repoOwner: 'admin',
+  repoName: 'test',
+  repoBio: '',
+  repoVisibility: 'public',
+  repoFollowers: '',
+  repoIssues: '',
+  repoCollaborators: '',
+})
 
-function copyUrl(){
-  document.execCommand("Copy",false,url.value)
-  ElMessage({
-    type:'success',
-    message:'Copy successfully!'
-  })
+function goto(path){
+  router.push('/'+repo.repoOwner+'/'+repo.repoName+'/'+path)
 }
-
 </script>
 
 <style scoped>

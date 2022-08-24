@@ -25,9 +25,7 @@
         </div>
         <el-input style="margin-top: 10px" placeholder="Find a repository..."/>
         <div>
-          <RepositoryS/>
-          <RepositoryS/>
-
+          <RepositoryS v-for="item in repoList" :repo="item"/>
         </div>
         <el-divider/>
       </el-aside>
@@ -83,6 +81,8 @@
 
 <script lang="ts" setup>
 import router from '../router'
+import require from '../utils/request.js'
+import {reactive} from "vue";
   const activities = [
     {
       content: '注册页面，实时检测用户名是否重复',
@@ -112,6 +112,31 @@ import router from '../router'
   function goto(path){
     router.push({name: path})
   }
+
+  let repoList = [{
+    repoOwner: 'admin',
+    repoName: 'test',
+    repoBio: '',
+    repoVisibility: 'public',
+    repoFollowers: '',
+    repoIssues: '',
+    repoCollaborators: '',
+  },{
+    repoOwner: 'admin',
+    repoName: 'test',
+    repoBio: '',
+    repoVisibility: 'public',
+    repoFollowers: '',
+    repoIssues: '',
+    repoCollaborators: '',
+  }]
+  //
+  // require.get('/repo/info')
+  //     .then(res => {
+  //       if (res == 200) {
+  //         repoList = res.data
+  //       }
+  //     })
 </script>
 
 <style scoped>
