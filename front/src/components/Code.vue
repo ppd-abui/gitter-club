@@ -89,7 +89,7 @@ export default {
           </el-table-column>
           <el-table-column prop="fileName" label="文件名">
             <template #default="scope">
-              <el-link @click="addQuery(pathData[scope.$index].fileName)">{{pathData[scope.$index].fileName}}</el-link>
+              <el-link @click="openFile(pathData[scope.$index].fileName)">{{pathData[scope.$index].fileName}}</el-link>
             </template>
           </el-table-column>
         </el-table>
@@ -122,15 +122,17 @@ import {ElMessage} from "element-plus";
   let regexp = /(\w)+/g
   path = path.match(regexp)
 
-  let query = router.currentRoute.value.query
   let branch=''
   let suffixDir=''
 
-  if (JSON.stringify(query)!=='{}') {
-    branch=''+query.branch
-    suffixDir=''+query.suffixDir
+  if (path.length===3) branch='master'
+  else branch=path[3]
+
+  let iter=4
+  if (path.length>4) {
+    suffixDir = suffixDir+'/'+path[iter]
+    iter++
   }
-  if (branch==='') branch='master'
 
   console.log('branch',branch,suffixDir)
 
@@ -175,7 +177,8 @@ function branchSwitchHide(){
     }
   }).then(res => {
     console.log(res)
-    if (res === 200){
+    if (res.code === 200){
+      pathData.value=res.data
     }
   })
 
@@ -206,9 +209,8 @@ function branchSwitchHide(){
     })
   }
 
-  function addQuery(queryObj){
-    router.push({path: router.currentRoute.value.fullPath,
-      query: {branch: branch, suffixDir: queryObj}})
+  function openFile(fileName){
+    router.push({path: router.currentRoute.value.fullPath+'/'+fileName})
   }
 
   function goto(direct){
