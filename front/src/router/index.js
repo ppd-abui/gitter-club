@@ -87,7 +87,8 @@ const routes = [
                   path: 'code',
                   component: () => import('../components/Code.vue'),
                   children: [{
-                    path: ':tab*'
+                    path: ':tab*',
+                    component: () => import('../components/RepoCode/File.vue')
                   }]
                 }, {
                   path: 'issues',

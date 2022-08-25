@@ -19,7 +19,9 @@ import {onMounted} from "vue";
 
   onMounted(()=>{
     let path = router.currentRoute.value.fullPath
-    router.push({path: path+'/list'})
+    let regexp = /(\w)+/g
+    path = path.match(regexp)
+    router.push({path: '/'+path[0]+'/'+path[1]+'/issues/list'})
   })
 </script>
 <style scoped>

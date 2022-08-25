@@ -79,20 +79,8 @@ export default {
       </div>
 
 <!--主体-->
-      <div style="z-index: 1; border: #d1d1d1 solid; width: 100%; margin-top: 20px; border-radius: 10px; box-shadow: #e4e7ed 3px 3px 5px;">
-        <el-table :data="pathData" style="width: 100%; border-radius: 10px;">
-          <el-table-column prop="fileType" width="40px">
-            <template #default="scope">
-              <el-icon v-if="pathData[scope.$index].fileType==='Dir'" color="blue"><Folder/></el-icon>
-              <el-icon v-else><Document/></el-icon>
-            </template>
-          </el-table-column>
-          <el-table-column prop="fileName" label="文件名">
-            <template #default="scope">
-              <el-link @click="openFile(pathData[scope.$index].fileName)">{{pathData[scope.$index].fileName}}</el-link>
-            </template>
-          </el-table-column>
-        </el-table>
+      <div>
+        <router-view/>
       </div>
 
     </div>
@@ -112,33 +100,15 @@ export default {
 </template>
 
 <script lang="ts" setup>
-import {pushScopeId, reactive, ref} from 'vue'
+import {pushScopeId, reactive, ref, watch, watchEffect} from 'vue'
 import router from '../router'
 import {useRouter} from "vue-router";
 import request from '../utils/request.js'
 import {ElMessage} from "element-plus";
 
 
-//正则表达匹配获取路由中的单个路径
-//path[0]为 repoOwner, path[1] 为 repoName
   let path = router.currentRoute.value.fullPath
-  let regexp = /(\w)+/g
-  path = path.match(regexp)
-//--------------------------------------
-
-  let branch=''
-  let suffixDir=''
-
-  if (path.length===3) branch='master'
-  else branch=path[3]
-
-  let iter=4
-  if (path.length>4) {
-    suffixDir = suffixDir+'/'+path[iter]
-    iter++
-  }
-
-  console.log('branch',branch,suffixDir)
+  let pathList = path.substr(1).split('/')
 
   let repo = reactive({
     repoId: '',
@@ -150,8 +120,8 @@ import {ElMessage} from "element-plus";
 
   request.get('/repo/name',{
     params: {
-      repoOwner: path[0],
-      repoName: path[1]
+      repoOwner: pathList[0],
+      repoName: pathList[1]
     }
   }).then(res => {
     repo.repoId=res.data.repoId
@@ -161,30 +131,14 @@ import {ElMessage} from "element-plus";
     repo.repoVisibility=res.data.repoVisibility
   })
 
-let ifBranchSwitchShow = ref(false)
+  let ifBranchSwitchShow = ref(false)
 
-function branchSwitchShow(){
-  ifBranchSwitchShow.value=!ifBranchSwitchShow.value
-}
-function branchSwitchHide(){
-  ifBranchSwitchShow.value=false
-}
-
-  const pathData = ref([])
-
-  request.get('/tree',{
-    params: {
-      repoOwner: path[0],
-      repoName: path[1],
-      branch: branch,
-      suffixDir: suffixDir
-    }
-  }).then(res => {
-    console.log(res)
-    if (res.code === 200){
-      pathData.value=res.data
-    }
-  })
+  function branchSwitchShow(){
+    ifBranchSwitchShow.value=!ifBranchSwitchShow.value
+  }
+  function branchSwitchHide(){
+    ifBranchSwitchShow.value=false
+  }
 
   let url=ref('')
   let ifCloneShow = ref(false)
@@ -192,8 +146,8 @@ function branchSwitchHide(){
     ifCloneShow.value=!ifCloneShow.value
     request.get('/url', {
       params: {
-        repoOwner: path[0],
-        repoName: path[1]
+        repoOwner: pathList[0],
+        repoName: pathList[1]
       }
     }).then(res=>{
       url.value = res.data
@@ -213,12 +167,8 @@ function branchSwitchHide(){
     })
   }
 
-  function openFile(fileName){
-    router.push({path: router.currentRoute.value.fullPath+'/'+fileName})
-  }
-
   function goto(direct){
-    router.push('/'+path[0]+'/'+path[1]+'/'+direct)
+    router.push('/'+pathList[0]+'/'+pathList[1]+'/'+direct)
   }
 </script>
 
