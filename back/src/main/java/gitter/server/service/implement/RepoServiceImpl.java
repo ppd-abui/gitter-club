@@ -2,15 +2,15 @@ package gitter.server.service.implement;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import gitter.server.common.Result;
 import gitter.server.entity.Repo;
+import gitter.server.entity.User;
 import gitter.server.mapper.RepoMapper;
 import gitter.server.service.RepoService;
 import gitter.server.utils.JGitUtils;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -32,6 +32,26 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public boolean forkRepo(Repo repo, User forkUser){
+        String remoteUrl = JGitUtils.getRepoUrl(repo);
+        System.out.println(remoteUrl);
+
+        String localUrl = JGitUtils.getBaseDir() + forkUser.getUserAccount() + '/';
+
+        //fork失败
+        if(!JGitUtils.forkRepository(remoteUrl, localUrl))
+            return false;
+
+        //fork成功
+        Repo forkRepo = new Repo();
+        forkRepo.setRepoOwner(forkUser.getUserAccount());
+        forkRepo.setRepoName(repo.getRepoName());
+        forkRepo.setRepoVisibility(repo.getRepoVisibility());
+        repoMapper.insert(forkRepo);
+        return true;
     }
 
     @Override   //通过仓库名搜索仓库（账号+仓库名）

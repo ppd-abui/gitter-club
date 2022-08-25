@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +29,6 @@ public class FileController {
     private String port;
     private static final String ip = "http://localhost";
 
-    private final String baseDir = "E:/idea/repository/";
-
     @Resource
     UserService userService;
 
@@ -40,9 +37,10 @@ public class FileController {
         //原始文件名
         String originalFileName = file.getOriginalFilename();
 
-        //获取前端token，通过token获得对应的userAccount
+
         String token = map.get("token").toString();
         String userAccount = userService.selectByToken(token).getUserAccount();
+
 
         //获取repoName、dir和commitMessage
         String repoName = map.get("repoName").toString();
@@ -52,9 +50,9 @@ public class FileController {
         //目标写入路径
         String desDir;
         if (!dir.equals(""))
-            desDir = baseDir + userAccount + '/' + repoName + '/' + dir + '/' + originalFileName;
+            desDir = JGitUtils.getBaseDir() + userAccount + '/' + repoName + '/' + dir + '/' + originalFileName;
         else
-            desDir = baseDir + userAccount + '/' + repoName + '/' + originalFileName;
+            desDir = JGitUtils.getBaseDir() + userAccount + '/' + repoName + '/' + originalFileName;
 
         try {
             FileUtil.writeBytes(file.getBytes(), desDir);
@@ -74,13 +72,13 @@ public class FileController {
     @GetMapping("{flag}")
     public void download(@PathVariable String flag, HttpServletResponse response) {
         OutputStream os;
-        List<String> fileNames = FileUtil.listFileNames(baseDir);
+        List<String> fileNames = FileUtil.listFileNames(JGitUtils.getBaseDir());
         String fileName = fileNames.stream().filter(name -> name.equals(flag)).findAny().orElse("");
         try {
             if (StrUtil.isNotEmpty(fileName)) {
                 response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
                 response.setContentType("application/octet-stream");
-                byte[] bytes = FileUtil.readBytes(baseDir + fileName);
+                byte[] bytes = FileUtil.readBytes(JGitUtils.getBaseDir() + fileName);
                 os = response.getOutputStream();
                 os.write(bytes);
                 os.flush();
@@ -94,7 +92,10 @@ public class FileController {
     @GetMapping("/tree")
     public Result<?> getFiles(@RequestParam String repoOwner,@RequestParam String repoName,
                          @RequestParam String branch,@RequestParam String suffixDir){
-        String path = baseDir + repoOwner + '/' + repoName + '/' + suffixDir;
+
+        System.out.println(suffixDir);
+        String path = JGitUtils.getBaseDir() + repoOwner + '/' + repoName + '/' + suffixDir;
+        System.out.println(path);
         File file = new File(path);
         if (file.isFile()){
             return new Result<>(200,file,"");
