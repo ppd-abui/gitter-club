@@ -2,7 +2,6 @@ package gitter.server.utils;
 
 import gitter.server.entity.Repo;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
@@ -32,7 +31,7 @@ public class JGitUtils {
         return new Git(repo);
    }
 
-   public static Git getRepository(String userAccount,String repoName) throws IOException, GitAPIException{
+   public static Git getRepository(String userAccount,String repoName) throws IOException{
        String repoDir = baseDir + userAccount + "/" + repoName;
 
        Repository repository = new FileRepositoryBuilder()
@@ -44,5 +43,22 @@ public class JGitUtils {
 
    public static String getRepoUrl(Repo repo){
         return baseDir + repo.getRepoOwner() + "/" + repo.getRepoName();
+   }
+
+   public static boolean forkRepository(String remoteUrl,String localUrl){
+        try{
+            Git.cloneRepository()
+                    .setURI(remoteUrl)
+                    .setDirectory(new File(localUrl))
+                    .call();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+   }
+
+   public static String getBaseDir(){
+        return baseDir;
    }
 }

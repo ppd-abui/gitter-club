@@ -36,7 +36,7 @@ public class RepoController {
     }
 
     @PostMapping("/repo/name")
-    public Result<?> checkRepoName(@RequestHeader("token") String token, @RequestBody Repo repo) {
+    public Result<?> isRepoNameExist(@RequestHeader("token") String token, @RequestBody Repo repo) {
         User resUser = userService.selectByToken(token);
         if (resUser == null)
             return new Result<>(500, null, "Create failed!");
@@ -45,28 +45,31 @@ public class RepoController {
         Repo resRepo = repoService.selectByRepoName(repo);
 
         if (resRepo == null)
-            return new Result<>(200, null, "This repository name is available");
+            return new Result<>(500, null, "This repository name is available");
         else
-            return new Result<>(500, null, "The repository name already exists on this account");
+            return new Result<>(200, resRepo, "The repository name already exists on this account");
     }
 
 
     @GetMapping("/repo/name")
-    public Result<?> checkRepoName(@RequestParam String repoOwner, @RequestParam String repoName) {
+    public Result<?> isRepoNameExist(@RequestParam String repoOwner, @RequestParam String repoName) {
         Repo repo = new Repo();
         repo.setRepoOwner(repoOwner);
         repo.setRepoName(repoName);
         Repo res = repoService.selectByRepoName(repo);
 
         if (res == null)
-            return new Result<>(200, null, "This repository name is available");
+            return new Result<>(500, null, "This repository name is available");
         else
-            return new Result<>(500, null, "The repository name already exists on this account");
+            return new Result<>(200, res, "The repository name already exists on this account");
     }
 
-    @PostMapping("/url")
-    public Result<?> getUrl(@RequestBody Repo repo){
+    @GetMapping("/url")
+    public Result<?> getUrl(@RequestParam String repoOwner, @RequestParam String repoName){
 
+        Repo repo = new Repo();
+        repo.setRepoOwner(repoOwner);
+        repo.setRepoName(repoName);
         try {
             String url = JGitUtils.getRepoUrl(repo);
             return new Result<>(200,url,"");
@@ -90,4 +93,16 @@ public class RepoController {
         }
     }
 
+    @PostMapping("/fork")
+    public Result<?> fork(@RequestHeader("token") String token, @RequestBody Repo repo){
+
+        User forkUser = userService.selectByToken(token);
+        if (forkUser==null)
+            return new Result<>(500,null,"Could not find fork user!");
+
+        if (repoService.forkRepo(repo,forkUser))
+            return new Result<>(200,null,"Fork successfully!");
+        else
+            return new Result<>(500,null,"System error, fork failed!");
+    }
 }
