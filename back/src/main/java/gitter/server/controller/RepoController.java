@@ -82,6 +82,7 @@ public class RepoController {
     @GetMapping("/repo/info")
     public Result<?> getRepos(@RequestHeader("token") String token){
         try{
+            System.out.println(token+"--------------");
             User user = userService.selectByToken(token);
             Repo repo = new Repo();
             repo.setRepoOwner(user.getUserAccount());

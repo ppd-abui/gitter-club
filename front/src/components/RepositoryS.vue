@@ -21,7 +21,6 @@ import {onMounted, reactive, toRef, toRefs} from "vue";
     repo: Object
   })
   const {repo} = toRefs(props)
-  console.log('repo', repo.value)
 
   function goto(){
     router.push({path: '/'+repo.value.repoOwner+'/'+repo.value.repoName})

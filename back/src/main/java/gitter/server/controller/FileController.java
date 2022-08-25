@@ -37,12 +37,8 @@ public class FileController {
         //原始文件名
         String originalFileName = file.getOriginalFilename();
 
-
-        String token = map.get("token").toString();
-        String userAccount = userService.selectByToken(token).getUserAccount();
-
-
         //获取repoName、dir和commitMessage
+        String userAccount = map.get("repoOwner").toString();
         String repoName = map.get("repoName").toString();
         String dir = map.get("dir").toString();
         String commitMessage = map.get("commitMessage").toString();

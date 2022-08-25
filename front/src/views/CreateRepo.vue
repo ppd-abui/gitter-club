@@ -130,7 +130,7 @@ function createRepo(){
         type:"success",
         message:"Repository created successfully!"
       })
-      router.push('/repo')
+      router.push('/')
     } else {
       ElMessage({
         type:"error",

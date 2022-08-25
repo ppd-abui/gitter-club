@@ -1,11 +1,4 @@
-<script lang = "ts">
-export default {
-  name: "RepositoryCenter"
-}
-</script>
-
 <template>
-
   <el-container>
     <el-main>
       <!-- 查询窗口-->
@@ -32,26 +25,24 @@ export default {
           </el-col>
         </el-row>
       <!-- 仓库信息展示-->
-      <el-col :span ="30" v-for = "(item) in tableData" :key = "item.ID" mode = "vertical">
+      <el-col :span ="30" v-for = "repo in repoInfo"  mode = "vertical">
         <div id = "card">
           <el-divider>
             <el-icon><star-filled /></el-icon>
           </el-divider>
-          <el-link type="success" href="https://element.eleme.io" style="font-family: Calibri;font-size: 35px">{{item.name}}</el-link>
-          <el-tag style="margin-left:10px" size = small >{{ item.look }}</el-tag>
-          <div style = "float:right;margin-right: 20px">
-            <el-button  :icon="item.star==0 ?Star:StarFilled"  @click="testStar(item.star)" > Star</el-button>
-          </div>
-
+          <el-link type="success" href="https://element.eleme.io" style="font-family: Calibri;font-size: 35px">{{repo.repoName}}</el-link>
+          <el-tag style="margin-left:10px" size = small >{{ repo.repoVisibility }}</el-tag>
+<!--          <div style = "float:right;margin-right: 20px">-->
+<!--            <el-button  :icon="item.star==0 ?Star:StarFilled"  @click="testStar(item.star)" > Star</el-button>-->
+<!--          </div>-->
           <br/>
           <span style="font-size: 20px">
-                  {{item.info}}
+                  {{repo.repoBio}}
                   <br/><br/>
                   <div style="font-size: 15px;font-family: Cambria;color:#808080">
-                   {{item.time}}
+                   {{repo.time}}
                   </div>
-                </span>
-
+          </span>
         </div>
       </el-col>
     </el-main>
@@ -59,15 +50,38 @@ export default {
 
 </template>
 
+<script lang="ts">
+export default {
+  name: "RepositoryCenter",
+}
+</script>
 
 <script lang="ts" setup>
-import router from '../router/index.js'
-import { ref,inject } from 'vue'
+import {ref, reactive, onBeforeMount} from 'vue'
 import { Search,Star,StarFilled } from '@element-plus/icons-vue'
+import request from "../utils/request";
+
+let repoInfo = ref([]);
+
 
 const type = ref("")
 const sort_type = ref("")
 const input = ref("")
+
+//获取仓库信息
+onBeforeMount(()=>{
+  set();
+})
+
+function set(){
+    request.get('/repo/info'
+    ).then(res=>{
+          console.log(res)
+          repoInfo.value = res.data;
+        }
+    )
+}
+
 function testStar(bool){
   if(bool == 1)
     bool = 0;
@@ -76,35 +90,13 @@ function testStar(bool){
   this.reload();
 }
 
-const tableData = [
-  {
-    ID:'1',
-    name:'2',
-    look:'public',
-    info:'1111111',
-    num:'2',
-    time:'1111',
-    star:'1',
-  },
-  {
-    ID:'2',
-    name:'2',
-    look:'public',
-    info:'1111111',
-    num:'2',
-    time:'1111',
-    star:'0',
-  },
-  {
-    ID:'3',
-    name:'2',
-    look:'public',
-    info:'1111111',
-    num:'2',
-    time:'1111',
-    star:'0',
-  },
-]
+let repo = reactive({
+  repoID:'',
+  repoName:'',
+  repoBio:'',
+  repoVisibility:'',
+},)
+
 
 </script>
 

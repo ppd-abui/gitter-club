@@ -39,11 +39,10 @@ const routes = [
       console.log('has token')
       console.log('to',to.path)
       if (to.matched.length === 0) {
-        let path = to.path
-        let regexp = /(\w)+/g
-        path = path.match(regexp)
+        let pathList = to.path.substr(1).split('/')
 
-        let userAccount = path[0]
+
+        let userAccount = pathList[0]
 
         //addAccount
         request.get('/register/account', {
@@ -58,18 +57,15 @@ const routes = [
               path: '/' + userAccount,
               name: userAccount + 'space',
               component: () => import('../views/Person.vue'),
-              children: [{
-                path: ':tab',
-              }]
             })
             console.log('added account route',router.getRoutes())
-            if (path.length===1) next(to.path)
+            if (pathList.length===1) next(to.path)
           } else if (res.code === 200) {
-            console.log('no account')
+            next('/404')
           }
         })
-        if (path.length > 1) {
-          let repoName = path[1]
+        if (pathList.length > 1) {
+          let repoName = pathList[1]
           let repoOwner = userAccount
 
           request.get('/repo/name',{
@@ -90,15 +86,22 @@ const routes = [
                   path: 'code',
                   component: () => import('../components/Code.vue'),
                   children: [{
-                    path: ':tab*'
+                    path: ':tab*',
+                    component: () => import('../components/RepoCode/File.vue')
                   }]
                 }, {
                   path: 'issues',
                   component: () => import('../components/Issues.vue'),
                   children: [{
-                    path: 'new',
-                    component: () => import('../components/CreateIssue.vue')
+                    path: 'list',
+                    component: () => import('../components/RepoIssues/IssueList.vue')
+                  },{
+                    path: ':issueName',
+                    component: () => import('../components/RepoIssues/IssueContent.vue')
                   }]
+                },{
+                  path: 'newissue',
+                  component: () => import('../components/CreateIssue.vue')
                 }, {
                   path: 'pull',
                   component: () => import('../components/Pull.vue')
@@ -124,7 +127,8 @@ const routes = [
             }
             console.log('added repo route',router.getRoutes())
             let set = ['code','issues','pull','settings','upload','new']
-            if (!(path[2] in set)) next('/404')
+            if (pathList.length===2) next(to.path)
+            else if (set.indexOf(path[2])===-1) next('/404')
             else next(to.path)
           })
         }

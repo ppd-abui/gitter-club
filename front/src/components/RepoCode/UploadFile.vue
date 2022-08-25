@@ -56,17 +56,20 @@ import router from "../../router"
 import {createApp, reactive, ref} from 'vue'
 import type { UploadInstance } from 'element-plus'
 
+let path = router.currentRoute.value.fullPath
+let pathList = path.substr(1).split('/')
 
 const uploadRef = ref<UploadInstance>()
 let commitInfo = reactive({
-  token:sessionStorage.getItem('token'),
+  repoOwner: '',
   repoName:'',
   dir:'',
   commitMessage:''
 })
 
 function beforeUpload() {
-  commitInfo.repoName = 'testToken';
+  commitInfo.repoOwner = pathList[0]
+  commitInfo.repoName = pathList[1]
   commitInfo.dir=''
 }
 
