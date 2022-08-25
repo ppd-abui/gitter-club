@@ -114,5 +114,6 @@ public class FileController {
                 fileTypes.add(new FileType("File",f.getName()));
         }
         return new Result<>(200,fileTypes,"successfully!");
+
     }
 }
