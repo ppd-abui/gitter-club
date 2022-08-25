@@ -39,7 +39,7 @@ const routes = [
       console.log('has token')
       console.log('to',to.path)
       if (to.matched.length === 0) {
-        let pathList = path.substr(1).split('/')
+        let pathList = to.path.substr(1).split('/')
 
 
         let userAccount = pathList[0]
@@ -59,12 +59,12 @@ const routes = [
               component: () => import('../views/Person.vue'),
             })
             console.log('added account route',router.getRoutes())
-            if (path.length===1) next(to.path)
+            if (pathList.length===1) next(to.path)
           } else if (res.code === 200) {
             next('/404')
           }
         })
-        if (path.length > 1) {
+        if (pathList.length > 1) {
           let repoName = pathList[1]
           let repoOwner = userAccount
 
@@ -127,7 +127,7 @@ const routes = [
             }
             console.log('added repo route',router.getRoutes())
             let set = ['code','issues','pull','settings','upload','new']
-            if (path.length===2) next(to.path)
+            if (pathList.length===2) next(to.path)
             else if (set.indexOf(path[2])===-1) next('/404')
             else next(to.path)
           })
