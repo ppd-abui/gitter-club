@@ -58,14 +58,11 @@ const routes = [
               path: '/' + userAccount,
               name: userAccount + 'space',
               component: () => import('../views/Person.vue'),
-              children: [{
-                path: ':tab',
-              }]
             })
             console.log('added account route',router.getRoutes())
             if (path.length===1) next(to.path)
           } else if (res.code === 200) {
-            console.log('no account')
+            next('/404')
           }
         })
         if (path.length > 1) {
@@ -96,9 +93,15 @@ const routes = [
                   path: 'issues',
                   component: () => import('../components/Issues.vue'),
                   children: [{
-                    path: 'new',
-                    component: () => import('../components/CreateIssue.vue')
+                    path: 'list',
+                    component: () => import('../components/RepoIssues/IssueList.vue')
+                  },{
+                    path: ':issueName',
+                    component: () => import('../components/RepoIssues/IssueContent.vue')
                   }]
+                },{
+                  path: 'newissue',
+                  component: () => import('../components/CreateIssue.vue')
                 }, {
                   path: 'pull',
                   component: () => import('../components/Pull.vue')
