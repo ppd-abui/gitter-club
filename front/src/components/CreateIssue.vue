@@ -42,6 +42,7 @@ import {reactive, ref} from 'vue'
 import {ElMessage} from "element-plus";
 const textarea = ref('')
 
+console.log('create an Issue!!!!!!!!!')
 let issue = reactive({
   issueTitle: '',
   issueContent: ''

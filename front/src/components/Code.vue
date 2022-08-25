@@ -118,9 +118,13 @@ import {useRouter} from "vue-router";
 import request from '../utils/request.js'
 import {ElMessage} from "element-plus";
 
+
+//正则表达匹配获取路由中的单个路径
+//path[0]为 repoOwner, path[1] 为 repoName
   let path = router.currentRoute.value.fullPath
   let regexp = /(\w)+/g
   path = path.match(regexp)
+//--------------------------------------
 
   let branch=''
   let suffixDir=''
