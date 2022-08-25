@@ -55,13 +55,13 @@ import request from "../../utils/request";
 //正则表达匹配获取路由中的单个路径
 //path[0]为 repoOwner, path[1] 为 repoName
   let path = router.currentRoute.value.fullPath
-  let regexp = /(\w)+/g
-  path = path.match(regexp)
+  let pathList = path.substr(1).split('/')
+
 //--------------------------------------
 
   function gotoCreateIssue()
   {
-    router.push({path: '/'+path[0]+'/'+path[1]+'/newissue'})
+    router.push({path: '/'+pathList[0]+'/'+pathList[1]+'/newissue'})
   }
   let  arr = ref([]);
   onBeforeMount(() => {

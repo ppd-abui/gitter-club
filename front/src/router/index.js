@@ -39,11 +39,10 @@ const routes = [
       console.log('has token')
       console.log('to',to.path)
       if (to.matched.length === 0) {
-        let path = to.path
-        let regexp = /(\w)+/g
-        path = path.match(regexp)
+        let pathList = path.substr(1).split('/')
 
-        let userAccount = path[0]
+
+        let userAccount = pathList[0]
 
         //addAccount
         request.get('/register/account', {
@@ -66,7 +65,7 @@ const routes = [
           }
         })
         if (path.length > 1) {
-          let repoName = path[1]
+          let repoName = pathList[1]
           let repoOwner = userAccount
 
           request.get('/repo/name',{
