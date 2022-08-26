@@ -128,7 +128,7 @@ const routes = [
             console.log('added repo route',router.getRoutes())
             let set = ['code','issues','pull','settings','upload','new']
             if (pathList.length===2) next(to.path)
-            else if (set.indexOf(path[2])===-1) next('/404')
+            else if (set.indexOf(pathList[2])===-1) next('/404')
             else next(to.path)
           })
         }

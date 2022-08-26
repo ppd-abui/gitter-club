@@ -30,13 +30,13 @@
           <el-divider>
             <el-icon><star-filled /></el-icon>
           </el-divider>
-          <el-link type="success" href="https://element.eleme.io" style="font-family: Calibri;font-size: 35px">{{repo.repoName}}</el-link>
+          <el-button text style="font-family: Calibri;font-size: 35px;color: limegreen" @click="gotoRepo(repo.repoName)">{{repo.repoName}}</el-button>
           <el-tag style="margin-left:10px" size = small >{{ repo.repoVisibility }}</el-tag>
 <!--          <div style = "float:right;margin-right: 20px">-->
 <!--            <el-button  :icon="item.star==0 ?Star:StarFilled"  @click="testStar(item.star)" > Star</el-button>-->
 <!--          </div>-->
           <br/>
-          <span style="font-size: 20px">
+          <span style="font-size: 20px;margin-top: 8px;margin-left: 14px">
                   {{repo.repoBio}}
                   <br/><br/>
                   <div style="font-size: 15px;font-family: Cambria;color:#808080">
@@ -60,6 +60,10 @@ export default {
 import {ref, reactive, onBeforeMount} from 'vue'
 import { Search,Star,StarFilled } from '@element-plus/icons-vue'
 import request from "../utils/request";
+import router from "../router/index.js"
+
+let path = router.currentRoute.value.fullPath
+let pathList = path.substr(1).split('/')
 
 let repoInfo = ref([]);
 
@@ -74,12 +78,22 @@ onBeforeMount(()=>{
 })
 
 function set(){
-    request.get('/repo/info'
-    ).then(res=>{
-          console.log(res)
+    request.get('/repo/info',{
+      params:{
+        userAccount:pathList[0]
+      }
+    }).then(res=>{
+          console.log(res);
           repoInfo.value = res.data;
         }
     )
+}
+
+function gotoRepo(name){
+  let repoUrl = pathList[0]+'/'+name+'/code';
+  console.log("111111");
+  console.log(repoUrl);
+  router.push(repoUrl);
 }
 
 function testStar(bool){

@@ -1,11 +1,13 @@
 package gitter.server.controller;
 
 import gitter.server.common.Result;
+import gitter.server.entity.Repo;
 import gitter.server.entity.User;
 import gitter.server.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,7 +29,6 @@ public class UserController {
 
         String token = UUID.randomUUID()+"";
         userService.storeToken(token,res);
-        System.out.println(token);
         return new Result<>(200,token,"Login successfully!");
     }
 
@@ -47,5 +48,16 @@ public class UserController {
             return new Result<>(200,null,"Register successfully!");
         else
             return new Result<>(500,null,"");
+    }
+
+    @GetMapping("/user/search")
+    public Result<?> repoSearch(@RequestParam String keyWord){
+        try {
+            List<User> resUsers = userService.selectListByKeyword(keyWord);
+            return new Result<>(200,resUsers,"Successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500,null,"Search failed!");
+        }
     }
 }

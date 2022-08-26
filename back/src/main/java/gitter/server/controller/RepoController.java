@@ -80,13 +80,13 @@ public class RepoController {
     }
 
     @GetMapping("/repo/info")
-    public Result<?> getRepos(@RequestHeader("token") String token){
+    public Result<?> getRepos(@RequestParam String userAccount){
         try{
-            System.out.println(token+"--------------");
-            User user = userService.selectByToken(token);
+            System.out.println(userAccount);
+            User user = userService.selectByUserAccount(userAccount);
             Repo repo = new Repo();
             repo.setRepoOwner(user.getUserAccount());
-            List<Repo> repos = repoService.selectByRepoOwner(repo);
+            List<Repo> repos = repoService.selectListByRepoOwner(repo);
             return new Result<>(200,repos,"获取成功！");
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,11 +99,23 @@ public class RepoController {
 
         User forkUser = userService.selectByToken(token);
         if (forkUser==null)
-            return new Result<>(500,null,"Could not find fork user!");
+            return new Result<>(500,null,"Couldn't find user!");
 
         if (repoService.forkRepo(repo,forkUser))
             return new Result<>(200,null,"Fork successfully!");
         else
             return new Result<>(500,null,"System error, fork failed!");
     }
+
+    @GetMapping("/repo/search")
+    public Result<?> repoSearch(@RequestParam String keyWord){
+        try {
+            List<Repo> resRepos = repoService.selectListByKeyword(keyWord);
+            return new Result<>(200,resRepos,"Successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500,null,"Search failed!");
+        }
+    }
+
 }

@@ -70,7 +70,7 @@ export default {
         <el-divider style="margin-bottom: 15px"/>
         <div style="display: flex">
           <el-icon style="height: 20px; width: 20px; margin-right: 10px; color: grey;" class="is-loading"><Loading/></el-icon>
-          <span style="font-size: 14px; color: #b1b1b1">You are creating a public repository in your personal account.</span>
+          <span style="font-size: 14px; color: #b1b1b1">You are creating a {{ repo.repoVisibility }} repository in your personal account.</span>
         </div>
         <el-divider style="margin-top: 15px"/>
         <el-button :disabled="!isAble" @click="createRepo">Create Repository</el-button>

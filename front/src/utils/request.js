@@ -22,27 +22,19 @@ request.interceptors.request.use(config => {
 request.interceptors.response.use(
     response => {
         let res = response.data;
-
-        //状态码正常
-        if (res.code === 200){
-            // 如果是返回的文件
-            if (response.config.responseType === 'blob') {
-                return res
-            }
-            // 兼容服务端返回的字符串数据
-            if (typeof res === 'string') {
-                res = res ? JSON.parse(res) : res
-            }
+        // 如果是返回的文件
+        if (response.config.responseType === 'blob') {
+            return res
         }
-        // else
-        // {
-        //     alert(!res.msg ? '系统异常' : res.msg)
-        //     return Promise.reject(response.data.msg)
-        // }
+        // 兼容服务端返回的字符串数据
+        if (typeof res === 'string') {
+            res = res ? JSON.parse(res) : res
+        }
         return res;
     },
     error => {
         console.log('err' + error) // for debug
+        return Promise.reject(error)
     }
 )
 

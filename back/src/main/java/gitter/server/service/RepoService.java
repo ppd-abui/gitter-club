@@ -13,5 +13,6 @@ public interface RepoService extends IService<Repo> {
     boolean forkRepo(Repo repo,User forkUser);
     //通过仓库名搜索仓库（账号+仓库名)
     Repo selectByRepoName(Repo repo);
-    List<Repo> selectByRepoOwner(Repo repo);
+    List<Repo> selectListByRepoOwner(Repo repo);
+    List<Repo> selectListByKeyword(String keyword);
 }

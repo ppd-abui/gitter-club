@@ -1,6 +1,7 @@
 package gitter.server;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -16,8 +17,26 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+
+
+/**
+ * 用户搜索："/user/search"  请求方式：Get      模糊匹配匹配用户名
+ * 仓库搜索："/repo/search"  请求方式：Get      模糊匹配仓库名、仓库简介
+ * 搜索变量名：keyWord
+ */
+
+/**
+ * 返回格式：
+ * {
+ *      code:
+ *      data:[]     数组，每一项为一个Repo(User)对象
+ *      msg:
+ * }
+ */
+
 
 public class JGit {
 
@@ -114,13 +133,23 @@ public class JGit {
         System.out.println(outputStream);
     }
 
-    public static void main(String[] args) throws IOException, GitAPIException {
-        Git git = getTestGit();
+    public static void main(String[] args) throws Exception{
+        String remoteUrl = "E:/idea/repository/ppd-abui/testJGit";
+        String localUrl = "E:idea/repository/admin/clone";
 
-        //添加所有文件
-        //git.add().addFilepattern(".").call();
+        File localPath = new File(localUrl);
+        System.out.println(localPath.isDirectory());
+        if(!localPath.delete()) {
+            throw new IOException("Could not delete temporary file " + localPath);
+        }
 
-        System.out.println(System.getProperty("user.dir") + "/../repository");
-
+        // then clone
+        System.out.println("Cloning from " + remoteUrl + " to " + localPath);
+        try (Git result = Git.cloneRepository()
+                .setURI(remoteUrl)
+                .setDirectory(localPath)
+                .call()) {
+            System.out.println("Having repository: " + result.getRepository().getDirectory());
+        }
     }
 }

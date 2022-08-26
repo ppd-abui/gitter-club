@@ -115,8 +115,11 @@ import {reactive, ref, toRef} from "vue";
 
   let repoList= ref([])
 
-  require.get('/repo/info')
-      .then(res => {
+  require.get('/repo/info',{
+    params:{
+      userAccount:localStorage.getItem("userAccount")
+    }
+  }).then(res => {
         if (res.code === 200) {
           res.data.forEach(function (item, index){
             repoList.value.push(item)
