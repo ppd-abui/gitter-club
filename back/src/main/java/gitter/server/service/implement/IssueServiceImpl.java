@@ -34,7 +34,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueMapper,Issue>  implements
     }
 
     @Override
-    public List<Issue> selectByRepoName(String repoOwner, String repoName){
+    public List<Issue> selectListByRepoName(String repoOwner, String repoName){
         return issueMapper
                 .selectList(Wrappers.<Issue>lambdaQuery()
                         .eq(Issue::getIssueUsername,repoOwner)

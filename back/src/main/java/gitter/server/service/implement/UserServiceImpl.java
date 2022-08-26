@@ -2,6 +2,7 @@ package gitter.server.service.implement;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import gitter.server.entity.Repo;
 import gitter.server.entity.User;
 import gitter.server.mapper.UserMapper;
 import gitter.server.service.UserService;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -57,5 +59,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override   //通过token查找用户
     public User selectByToken(String token){
         return userMap.get(token);
+    }
+
+    @Override
+    public List<User> selectListByKeyword(String keyword){
+        return userMapper
+                .selectList(Wrappers.<User>lambdaQuery()
+                        .like(User::getUserAccount,keyword));
     }
 }

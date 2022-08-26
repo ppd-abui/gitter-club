@@ -103,7 +103,7 @@ export default {
             .then(res=>{
               if (res.code===200){
                 localStorage.setItem('token', res.data)
-                localStorage.setItem('userAccount', JSON.stringify(user.userAccount))
+                localStorage.setItem('userAccount', user.userAccount)
                 console.log(user.userAccount+'login')
                 router.push('/')
               } else {

@@ -37,8 +37,6 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
     @Override
     public boolean forkRepo(Repo repo, User forkUser){
         String remoteUrl = JGitUtils.getRepoUrl(repo);
-        System.out.println(remoteUrl);
-
         String localUrl = JGitUtils.getBaseDir() + forkUser.getUserAccount() + '/';
 
         //fork失败
@@ -63,9 +61,17 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
     }
 
     @Override
-    public List<Repo> selectByRepoOwner(Repo repo){
+    public List<Repo> selectListByRepoOwner(Repo repo){
         return repoMapper
                 .selectList(Wrappers.<Repo>lambdaQuery()
                 .eq(Repo::getRepoOwner,repo.getRepoOwner()));
+    }
+
+    @Override
+    public List<Repo> selectListByKeyword(String keyword){
+        return repoMapper
+                .selectList(Wrappers.<Repo>lambdaQuery()
+                .like(Repo::getRepoName,keyword)
+                .like(Repo::getRepoBio,keyword));
     }
 }

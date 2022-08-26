@@ -158,6 +158,7 @@ import {ElMessage} from "element-plus";
       type:'warning',
       message:'The function is developing!'
     })
+    console.log('repo.repoOwner:',repo.repoOwner,'repo.repoName:',repo.repoName)
   }
 
 </script>

@@ -42,7 +42,7 @@ public class IssueController {
     @GetMapping("/issue/get")
     public  Result<?> findAll (@RequestParam String repoOwner, @RequestParam String repoName) {
         try {
-            List<Issue> issues = issueService.selectByRepoName(repoOwner,repoName);
+            List<Issue> issues = issueService.selectListByRepoName(repoOwner,repoName);
             return new Result<>(200,issues,"Successfully!");
         } catch (Exception e) {
             e.printStackTrace();
