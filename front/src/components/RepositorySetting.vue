@@ -30,11 +30,13 @@ export default {
 <script lang = "ts" setup>
 import {ref} from "vue";
 import router from '../router'
-import General from "../components/RepositorySetting/General.vue"
+
+let path = router.currentRoute.value.fullPath
+let pathList = path.substr(1).split('/')
 
 const choose = ref("1")
 function go(path){
-  router.push({name: path})
+  router.push({path: '/'+pathList[0]+'/'+pathList[1]+'/settings/'+path})
 }
 </script>
 

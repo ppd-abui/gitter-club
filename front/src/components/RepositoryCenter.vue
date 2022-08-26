@@ -21,7 +21,7 @@
             </el-select>
           </el-col>
           <el-col :span="2" style="margin-left:10px">
-            <el-button type="success">new</el-button>
+            <el-button @click="gotoNew" type="success">new</el-button>
           </el-col>
         </el-row>
       <!-- 仓库信息展示-->
@@ -109,8 +109,11 @@ let repo = reactive({
   repoName:'',
   repoBio:'',
   repoVisibility:'',
-},)
+})
 
+function gotoNew(){
+  router.push({path: '/new'})
+}
 
 </script>
 

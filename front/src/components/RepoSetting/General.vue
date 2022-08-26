@@ -1,37 +1,30 @@
-<script lang = "ts">
-export default {
-  name: "General",
-  components: {},
-}
-
-</script>
-
 <template>
   <!--大标题-->
   <span style="font-size:30px;font-family: 'Arial'">
     General
   </span>
-
   <el-divider />
 <!--Basic-->
   <span style = "font-size: 22px">
     Basic
     <br/> <br/>
   </span>
-
   <el-form
-      label-width="160px"
+      label-width="200px"
   >
     <el-form-item label = "Repository Name">
       <el-col :span="8">
-        <el-input v-model="input_name" placeholder="Repository Name" />
+        <el-input v-model=localRepo.localRepoName placeholder="Repository Name" />
       </el-col>
       <el-col :span="5" style="margin-left: 20px">
-        <el-button @click="handleClick">Rename</el-button>
+        <el-button @click="handleChangeRepoName">Rename</el-button>
       </el-col>
     </el-form-item>
-    <el-form-item label="Activity form">
-      <el-input v-model="profile" type="textarea" />
+    <el-form-item label="Repository Introduction">
+      <el-input v-model="localRepo.localRepoBio" type="textarea" :rows="4" />
+    </el-form-item>
+    <el-form-item >
+      <el-button @click="handleChangeRepoBio">Change the Repository Introduction</el-button>
     </el-form-item>
   </el-form>
   <el-divider />
@@ -61,7 +54,7 @@ export default {
 
   <el-divider></el-divider>
 <!--Danger Zone-->
-  <span style = "font-size: 22px">
+  <span style = "font-size: 22px;color: #cf222e">
     Danger Zone
     <br/> <br/>
   </span>
@@ -84,14 +77,14 @@ export default {
         <el-alert  title=" Warning: this is a potentially destructive action." type="warning" show-icon />
         <br/>
         <span>Choose the visibility:</span>
-        <el-select v-model="visibility" style="margin-left: 20px">
-          <el-option  :value="1" :label="Public">Public</el-option>
-          <el-option  :value="0" :label="Private">Private</el-option>
+        <el-select v-model="localRepo.localRepoVisibility" style="margin-left: 20px">
+          <el-option :key=repoPublic  :value=repoPublic :label=repoPublic>Public</el-option>
+          <el-option :key=repoPrivate :value=repoPrivate :label=repoPrivate>Private</el-option>
         </el-select>
         <el-divider></el-divider>
-        <span style="font-size: 18px;font-family: Arial">Please type ck837/wwwqqq to confirm.</span>
-        <el-input style="margin-top: 20px"></el-input>
-        <el-button style="margin-top: 10px;height: 32px;width: 430px" >I understand,change repository visibility</el-button>
+        <span style="font-size: 18px;font-family: Arial">Please type {{pathList[0]}}/{{ pathList[1] }} to confirm.</span>
+        <el-input style="margin-top: 20px" v-model=queryInput > </el-input>
+        <el-button  style="width: 100%;margin-top: 15px" @click="handleChangeVisibility">I understand,change repository visibility</el-button>
       </el-dialog>
 
       <br/><br/>
@@ -126,12 +119,12 @@ export default {
         <br/><br/>
         <span style="font-size: 15px; ">New owner's GitHub username or organization name.</span>
 
-        <el-input style="margin-top: 20px;"></el-input>
+        <el-input style="margin-top: 20px;" v-model="localRepo.localRepoTransName"></el-input>
 
         <el-divider></el-divider>
-        <span style="font-size: 18px;font-">Please type ck837/wwwqqq to confirm.</span>
-        <el-input style="margin-top: 20px"></el-input>
-        <el-button style="margin-top: 10px;height: 32px;width: 430px" >I understand,change repository visibility</el-button>
+        <span style="font-size: 18px;font-family: Arial">Please type {{pathList[0]}}/{{ pathList[1] }} to confirm.</span>
+        <el-input v-model="queryInput" style="margin-top: 20px"></el-input>
+        <el-button style="width: 100%;margin-top: 15px" @click="handleTransRepo">I understand,change repository visibility</el-button>
       </el-dialog>
       <br/><br/>
       <span style="font-size: 15px">
@@ -145,7 +138,7 @@ export default {
         Delete this repository
       </span>
       <el-button style="margin-left: 20px;position: absolute;right: 10px" @click="delVisible = true">
-        Transfer
+        Delete
       </el-button>
       <el-dialog
           v-model= "delVisible"
@@ -159,9 +152,9 @@ export default {
         <br/>
         <span style="font-size: 15px">This will not change your billing plan. If you want to downgrade, you can do so in your Billing Settings.</span>
         <br/><br/>
-        <span style="font-size: 18px;font-">Please type ck837/wwwqqq to confirm.</span>
-        <el-input style="margin-top: 20px"></el-input>
-        <el-button style="margin-top: 10px;height: 32px;width: 430px" >I understand the consequences,delete this repository visibility</el-button>
+        <span style="font-size: 18px;font-family: Arial">Please type {{pathList[0]}}/{{ pathList[1] }} to confirm.</span>
+        <el-input style="margin-top: 20px" v-model="queryInput"></el-input>
+        <el-button style="width: 100%;margin-top: 15px" @click="handleDeleteRepo">I understand consequences,delete this repository visibility</el-button>
       </el-dialog>
       <br/><br/>
       <span style="font-size: 15px">
@@ -171,22 +164,167 @@ export default {
   </div>
 </template>
 
-<script lang = "ts" setup>
-import {ref} from "vue";
-import { ElMessage, ElMessageBox } from 'element-plus'
+<script lang = "ts">
 
+export default {
+  name: "General"
+}
+
+
+</script>
+
+<script lang = "ts" setup>
+import {onBeforeMount, reactive, ref} from "vue";
+import request from "../../utils/request.js"
+import { ElMessage, ElMessageBox } from 'element-plus'
+import router from "../../router/index.js"
+
+let path = router.currentRoute.value.fullPath
+let pathList = path.substr(1).split('/')
+
+//弹出框可见性确认函数
 let visiVisible = ref(false)
 let repoVisible = ref(false)
 let delVisible = ref(false)
 
-let Public= ref("Public")
-let Private = ref("Private")
-let dialogVisible = ref(false)
-const input_name = ref('')
-let visibility = ref('1')
-const profile= ref("")
+//本地暂时存储的修改后信
+let localRepo = reactive({
+  localRepoName:"",
+  localRepoBio: "",
+  localRepoVisibility :"",
+  localRepoTransName:""
+})
+
+//danger zone 确认输入框的值
+
+let queryInput=ref("")
+
+let repoPublic= ref("public")
+let repoPrivate = ref("private")
 const imageUrl = ref("")
 
+
+let setting =ref({
+})
+
+//界面初始化获取数据
+onBeforeMount(()=>{
+  set();
+})
+
+function set(){
+  request.get('/repo/name', {
+    params:{
+      repoOwner:pathList[0],
+      repoName:pathList[1]
+    }
+      }
+  ).then(res=>{
+        console.log("11111111");
+        setting.value = res.data;
+        console.log(res);
+        localRepo.localRepoName = setting.value.repoName;
+        localRepo.localRepoBio = setting.value.repoBio;
+        localRepo.localRepoVisibility = setting.value.repoVisibility;
+      }
+  )
+}
+
+//确认并发送修改仓库名请求
+
+const  handleChangeRepoName = () => {
+  ElMessageBox.confirm(
+      'Do you want to change the name?',
+      'Warning',
+      {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+          changeRepoName()
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: 'Rename canceled',
+        })
+      })
+}
+//change repo name
+function changeRepoName(){
+  request.get('/repo/change/name', {
+        params:{
+          repoOwner:pathList[0],
+          repoName:pathList[1],
+          repoNameNew: localRepo.localRepoName,
+        }
+      }
+  ).then(res=>{
+        console.log("hello")
+        if(res.code == 200) {
+          ElMessage({
+            message: 'Ohhhhh,Change the repository name successfully!',
+            type: 'success',
+          })
+          let repoUrl = '/#/'+pathList[0]+'/'+localRepo.localRepoName+'/settings/general'
+          router.push(repoUrl)
+        }
+        if(res.code == 500) {
+          ElMessage.error('Oops, the change meets a mistake...')
+        }
+      }
+  )
+}
+
+//确认并发送修改仓库简介请求
+
+const  handleChangeRepoBio = () => {
+  ElMessageBox.confirm(
+      'Do you want to change the introduction?',
+      'Warning',
+      {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        changeRepoBio()
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: 'Rename canceled',
+        })
+      })
+}
+//change repo Bio
+function changeRepoBio(){
+  request.get('/repo/change/bio', {
+        params:{
+          repoOwner:pathList[0],
+          repoName:pathList[1],
+          repoBioNew: localRepo.localRepoBio,
+        }
+      }
+  ).then(res=>{
+        if(res.code == 200) {
+          ElMessage({
+            message: 'Ohhhhh,Change the repository introduction successfully!',
+            type: 'success',
+          })
+          router.go(0);
+        }
+        if(res.code == 500) {
+          ElMessage.error('Oops, the change meets a mistake...')
+        }
+      }
+  )
+}
+
+//处理关闭窗口
 
 const handleClose = (done: () => void) => {
   ElMessageBox.confirm('Are you sure to close this dialog?')
@@ -197,15 +335,202 @@ const handleClose = (done: () => void) => {
         // catch error
       })
 }
-const data=[
-  {
-    name: 'Tom',
-  },
-  {
-    name: 'Tom',
-  },
-]
 
+//处理修改仓库可见性
+
+const  handleChangeVisibility = () => {
+  ElMessageBox.confirm(
+      'Do you want to change the visibility?',
+      'Warning',
+      {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        let temp1 = ref(pathList[0]+"/"+pathList[1]);
+        let a = (temp1.value != queryInput.value);
+        console.log("llllllllllll")
+        console.log(localRepo.localRepoVisibility)
+
+        if(temp1.value != queryInput.value) {
+          ElMessage({
+            type: 'info',
+            message: 'The qualification is wrong',
+          })
+        }else {changeRepoVisibility();}
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: 'Rename canceled',
+        })
+      })
+}
+
+//change repo Visibility
+function changeRepoVisibility(){
+  request.get('/repo/change/visibility', {
+        params:{
+          repoOwner:pathList[0],
+          repoName:pathList[1],
+          repoVisibilityNew: localRepo.localRepoVisibility,
+        }
+      }
+  ).then(res=>{
+        if(res.code == 200) {
+          ElMessage({
+            message: 'Ohhhhh,Change the repository visibility successfully!',
+            type: 'success',
+          })
+          router.go(0);
+        }
+        if(res.code == 500)
+          ElMessage.error('Oops, the change meets a mistake...')
+      }
+  )
+}
+
+//转让仓库
+const  handleTransRepo = () => {
+  ElMessageBox.confirm(
+      'Do you want to change the owner?',
+      'Warning',
+      {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        let temp1 = ref(pathList[0]+"/"+pathList[1]);
+        let a = (temp1.value != queryInput.value);
+        console.log("llllllllllll")
+        console.log(localRepo.localRepoTransName)
+
+        checkUser()
+
+        console.log(check.value)
+
+        if(temp1.value != queryInput.value) {
+            ElMessage({
+              type: 'info',
+              message: 'The qualification is wrong',
+            })
+          }
+        else if(check.value == false){
+          ElMessage({
+            type: 'info',
+            message: 'The name is undefined',
+          })
+        }
+        else {transRepo();}
+        check.value = false;
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: 'Rename canceled',
+        })
+      })
+}
+
+let check = ref(false)
+function checkUser(){
+  request.get('/register/account',{
+    params:{
+      userAccount:localRepo.localRepoTransName
+    }
+  })
+  .then(res=>{
+    if(res.code == 500) {
+      check.value = true;
+    }
+    console.log(res)
+  })
+}
+
+//change repo Visibility
+function transRepo(){
+  request.get('/repo/change/Owner', {
+        params:{
+          repoOwner:pathList[0],
+          repoName:pathList[1],
+          repoOwnerNew: localRepo.localRepoTransName,
+        }
+      }
+  ).then(res=>{
+        if(res.code == 200) {
+          ElMessage({
+            message: 'Ohhhhh,Trans the repository  successfully!',
+            type: 'success',
+          })
+          router.go(0);
+        }
+        if(res.code == 500)
+          ElMessage.error('Oops, the change meets a mistake...')
+      }
+  )
+}
+
+//删除仓库
+
+const  handleDeleteRepo = () => {
+  ElMessageBox.confirm(
+      'Do you want to delete the repo?',
+      'Warning',
+      {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        let temp1 = ref(pathList[0]+"/"+pathList[1]);
+        console.log("llllllllllll")
+        console.log(localRepo.localRepoTransName)
+
+        if(temp1.value != queryInput.value) {
+          ElMessage({
+            type: 'info',
+            message: 'The qualification is wrong',
+          })
+        }
+        else {deleteRepo();}
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: 'Rename canceled',
+        })
+      })
+}
+
+//delete repo
+function deleteRepo(){
+  request.get('/repo/delete', {
+        params:{
+          repoOwner:pathList[0],
+          repoName:pathList[1]
+        }
+      }
+  ).then(res=>{
+        if(res.code == 200) {
+          ElMessage({
+            message: 'Ohhhhh,Delete the repository successfully!',
+            type: 'success',
+          })
+          router.go(0);
+        }
+        if(res.code == 500)
+          ElMessage.error('Oops, the delete meets a mistake...')
+      }
+  )
+}
+
+
+//图片
 function handleAvatarSuccess(res, file) {
   if (res.msgCode === 200) {
     this.imageUrl = URL.createObjectURL(file.raw)
@@ -213,6 +538,7 @@ function handleAvatarSuccess(res, file) {
     this.$message.error(res.msgContent)
   }
 }
+
 // 图片上传前的判断
 function beforeAvatarUpload(file) {
   const isLt1M = file.size / 1024 / 1024
@@ -222,80 +548,6 @@ function beforeAvatarUpload(file) {
   return isLt1M
 }
 
-
-const  handleClick = () => {
-  ElMessageBox.confirm(
-      'Do you want to change the name?',
-      'Warning',
-      {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }
-  )
-      .then(() => {
-        ElMessage({
-          type: 'success',
-          message: 'Rename completed',
-          visibility : '0',
-        })
-      })
-      .catch(() => {
-        ElMessage({
-          type: 'info',
-          message: 'Rename canceled',
-        })
-      })
-}
-
-function handleClickPublic(){
-  ElMessageBox.confirm(
-      'Do you want to change the name?',
-      'Warning',
-      {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }
-  )
-      .then(() => {
-        ElMessage({
-          type: 'success',
-          message: 'Rename completed',
-          visibility : '1',
-        })
-      })
-      .catch(() => {
-        ElMessage({
-          type: 'info',
-          message: 'Rename canceled',
-        })
-      })
-}
-
-function handleClickPrivate(){
-  ElMessageBox.confirm(
-      'Do you want to change the name?',
-      'Warning',
-      {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }
-  )
-      .then(() => {
-        ElMessage({
-          type: 'success',
-          message: 'Rename completed',
-        })
-      })
-      .catch(() => {
-        ElMessage({
-          type: 'info',
-          message: 'Rename canceled',
-        })
-      })
-}
 
 </script>
 

@@ -13,6 +13,11 @@
           <el-link @click="openFile(pathData[scope.$index].fileName)">{{pathData[scope.$index].fileName}}</el-link>
         </template>
       </el-table-column>
+      <el-table-column prop="fileCommitMsg" label="提交信息">
+        <template #default="scope">
+          <el-link @click="openFile(pathData[scope.$index].lastCommitMessage)">{{pathData[scope.$index].lastCommitMessage}}</el-link>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 
@@ -51,14 +56,16 @@ import {watchEffect} from "vue";
     //通过路由获取仓库信息及路径
     let pathList = path.substr(1).split('/')
 
-    let branch = 'master'
+    let branch = pathList[3]
     let suffixDir = ''
 
-    let iter = 3
-    while (pathList.length >= 4 && iter < pathList.length) {
+    let iter = 4
+    while (pathList.length > 4 && iter < pathList.length) {
       suffixDir = suffixDir + '/' + pathList[iter]
       iter++
     }
+
+
 
     console.log('---------branch',branch,'----------suffixDir:',suffixDir)
     //发送请求获取目录

@@ -13,9 +13,9 @@ export default {
   >
     <img @click="goto('home')" style="margin-top: 5px ;margin-bottom: 7px;margin-left: 15px; height:80% " src="../assets/white.png">
 
-    <el-input style=" background-color: transparent; border: none; width: 300px; height: 25px; margin-top:17px; margin-left: 15px" v-model="input" placeholder="Search or jump to...">
+    <el-input style=" background-color: transparent; border: none; width: 300px; height: 25px; margin-top:17px; margin-left: 15px" v-model="input" placeholder="Search repositories...">
     </el-input>
-
+    <el-icon @click="searchRepo(input)" color="white" style="position: relative; top: 24px; left: 10px"><Search/></el-icon>
     <img @click="gotoSpace()" style="position: absolute; right: 20px; margin-top: 5px ; height:80%" src="../assets/white.png">
   </el-menu>
 </template>
@@ -29,8 +29,12 @@ import router from '../router'
     router.push({name: path})
   }
   function gotoSpace(){
-    router.push('/'+JSON.parse(localStorage.getItem('userAccount')))
+    router.push('/'+localStorage.getItem('userAccount'))
   }
+  function searchRepo(input){
+    if (input.value!=='') router.push({path: '/search', query: {keyWord: input}})
+  }
+
 </script>
 
 <style lang="scss" scoped>
