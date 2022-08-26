@@ -38,17 +38,23 @@ import RepositoryS from "../components/RepositoryS.vue";
 import index1 from "../components/Index.vue";
 import request from "../utils/request";
 import router from '../router';
-import {reactive, ref} from 'vue'
+import {reactive} from 'vue'
 import {ElMessage} from "element-plus";
-const textarea = ref('')
 
-console.log('create an Issue!!!!!!!!!')
+
+
 let issue = reactive({
   issueTitle: '',
-  issueContent: ''
+  issueContent: '',
+  issueReponame:''
 })
 
 function submit() {
+  let path = router.currentRoute.value.fullPath
+  let pathList = path.substr(1).split('/')
+  console.log(pathList)
+  issue.issueReponame=pathList[1]
+
   if(issue.issueTitle===''){
     ElMessage({
       type:'error',
@@ -63,7 +69,7 @@ function submit() {
         type:"success",
         message:"issue created successfully!"
       })
-      router.push('/repo')
+      router.push('/' + pathList[0] + '/' + pathList[1] + '/issues/list')
     } else {
       ElMessage({
         type:"error",

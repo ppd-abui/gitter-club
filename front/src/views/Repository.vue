@@ -26,7 +26,18 @@ export default {
             <el-link type="primary" style="font-size: 24px; font-family: 'Calibri Light'; font-weight: bold">{{repo.repoName}}</el-link>
           </div>
           <el-tag style="margin-top: 5px; margin-left: 10px" round type="info">{{repo.repoVisibility}}</el-tag>
-          <div style="width: 35%;"></div>
+          <div style="width: 60%;"></div>
+
+<!--          fork-->
+          <el-button style="position:relative; top: 5px;" @click="forkRepo">
+            <el-icon><Eleme/></el-icon>
+            <span style="font-family: Calibri; font-size: 14px; font-weight: bold; margin: 2px 10px 0 10px">Fork</span>
+            <div style="width: 20px; height: 20px; border-radius: 50%; background-color: #e7e7e7">
+              <span style="color: black; position: relative; top: 4px">{{0}}</span>
+            </div>
+          </el-button>
+<!--          fork-->
+
           <el-button style="position:relative; top: 5px;" @click="changeStar">
             <el-icon v-if="!isStar"><Star/></el-icon>
             <el-icon v-if="isStar"><StarFilled/></el-icon>
@@ -92,6 +103,7 @@ import {onMounted, reactive, ref, watch, watchEffect} from 'vue'
 import router from '../router'
 import request from '../utils/request.js'
 import {useRouter} from "vue-router";
+import {ElMessage} from "element-plus";
 
   let chooseTab = ref('')
 
@@ -104,13 +116,12 @@ import {useRouter} from "vue-router";
   })
 
   let path = router.currentRoute.value.fullPath
-  let regexp = /(\w)+/g
-  path = path.match(regexp)
+  let pathList = path.substr(1).split('/')
 
   request.get('/repo/name',{
     params: {
-      repoOwner: path[0],
-      repoName: path[1]
+      repoOwner: pathList[0],
+      repoName: pathList[1]
     }
   }).then(res => {
     repo.repoId=res.data.repoId
@@ -120,13 +131,33 @@ import {useRouter} from "vue-router";
     repo.repoVisibility=res.data.repoVisibility
   })
   function goto(pathName){
-    router.push('/'+repo.repoOwner+'/'+repo.repoName+'/'+pathName)
+    router.push('/'+pathList[0] + '/' + pathList[1] + '/'+pathName)
   }
 
   let isStar = ref(true)
   function changeStar(){
     isStar.value=!isStar.value
     console.log(repo)
+  }
+
+  function forkRepo(){
+    // request.post('/fork',repo).then(res=>{
+    //   console.log(res)
+    //   if(res.code === 200)
+    //     ElMessage({
+    //       type:'success',
+    //       message:'Fork successfully!'
+    //     })
+    //   else
+    //     ElMessage({
+    //       type:'warning',
+    //       message:'Repository ' + repo.repoName + ' already exists in your account!'
+    //     })
+    // })
+    ElMessage({
+      type:'warning',
+      message:'The function is developing!'
+    })
   }
 
 </script>

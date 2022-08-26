@@ -39,8 +39,8 @@ export default {
     </div>
     <el-table :data="arr" style="width: 900px;border: 1px solid;border-radius:10px;border-color: #d1d1d1;border-right-color: #d1d1d1;margin:auto">
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="issueTitle" label="IssueTitle" width="200" />
-      <el-table-column prop="issueContent" label="IssueContent" width="700"/>
+      <el-table-column prop="issueTitle" label="IssueTitle" width="900" />
+
     </el-table>
   </div>
 </template>
@@ -63,7 +63,7 @@ import request from "../../utils/request";
   {
     router.push({path: '/'+pathList[0]+'/'+pathList[1]+'/newissue'})
   }
-  let  arr = ref([]);
+  let arr = ref([]);
   onBeforeMount(() => {
     lista();
   });
@@ -72,16 +72,14 @@ import request from "../../utils/request";
     //发送请求
     request.get("/issue/get",{
       params: {
-        repoOwner: path[0],
-        repoName: path[1]
+        repoOwner: pathList[0],
+        repoName: pathList[1]
       }
     })
         .then((res) => {
-          // console.log(res);
           arr.value= res.data;   //赋值
         })
         .catch((error) => {
-
         });
   };
 </script>

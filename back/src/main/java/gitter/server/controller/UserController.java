@@ -27,7 +27,6 @@ public class UserController {
 
         String token = UUID.randomUUID()+"";
         userService.storeToken(token,res);
-        System.out.println(token);
         return new Result<>(200,token,"Login successfully!");
     }
 

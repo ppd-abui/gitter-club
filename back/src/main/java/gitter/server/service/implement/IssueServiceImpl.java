@@ -7,6 +7,7 @@ import gitter.server.service.IssueService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 public class IssueServiceImpl extends ServiceImpl<IssueMapper,Issue>  implements  IssueService{
@@ -23,11 +24,20 @@ public class IssueServiceImpl extends ServiceImpl<IssueMapper,Issue>  implements
             return false;
         }
     }
+
     @Override
     public Issue selectByIssueTitle(Issue issue)
     {
         return issueMapper.selectOne(Wrappers.<Issue>lambdaQuery()
             .eq(Issue::getIssueTitle,issue.getIssueTitle())
             .eq(Issue::getIssueContent,issue.getIssueContent()));
+    }
+
+    @Override
+    public List<Issue> selectByRepoName(String repoOwner, String repoName){
+        return issueMapper
+                .selectList(Wrappers.<Issue>lambdaQuery()
+                        .eq(Issue::getIssueUsername,repoOwner)
+                        .eq(Issue::getIssueReponame,repoName));
     }
 }
