@@ -11,11 +11,11 @@ const routes = [
       path: '/new',
       name: 'createRepo',
       component: () => import('../views/CreateRepo.vue')
-    },,{
+    },{
       path: '/search',
       name: 'search',
-      component: () => import('../views/SearchFile.vue')
-    },,{
+      component: () => import('../views/Search.vue')
+    },{
       path: '/login',
       name: 'login',
       component: () => import('../views/Login.vue'),
@@ -81,10 +81,11 @@ const routes = [
                 path: '/' + repoOwner + '/' + repoName,
                 name: repoName + 'repo',
                 component: () => import('../views/Repository.vue'),
-                redirect: '/' + repoOwner + '/' + repoName + '/code',
+                redirect: '/' + repoOwner + '/' + repoName + '/code/master',
                 children: [{
                   path: 'code',
                   component: () => import('../components/Code.vue'),
+                  redirect: '/' + repoOwner + '/' + repoName + '/code/master',
                   children: [{
                     path: ':tab*',
                     component: () => import('../components/RepoCode/File.vue')
@@ -126,7 +127,7 @@ const routes = [
               })
             }
             console.log('added repo route',router.getRoutes())
-            let set = ['code','issues','pull','settings','upload','new']
+            let set = ['code','issues','pull','settings','upload','new','newissue','newrequest']
             if (pathList.length===2) next(to.path)
             else if (set.indexOf(pathList[2])===-1) next('/404')
             else next(to.path)
