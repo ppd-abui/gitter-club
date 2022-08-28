@@ -1,15 +1,17 @@
 package gitter.server;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 
 import gitter.server.utils.JGitUtils;
+import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.NameRevCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
@@ -18,8 +20,10 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.transport.URIish;
 import org.eclipse.jgit.treewalk.AbstractTreeIterator;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -51,19 +55,6 @@ public class JGit {
             walk.dispose();
             return treeParser;
         }
-    }
-
-    //获取测试仓库的Git对象
-    public static Git getTestGit() throws IOException, GitAPIException{
-        String userName = "ppd-abui";
-        String repoName = "testJGit";
-        //仓库路径
-        String dir = "E:/idea/repository/" + userName + "/" + repoName + "/";
-
-//        现实仓库路径
-//        System.out.println(git2.getRepository().getDirectory());
-
-        return JGitUtils.getRepository(userName,repoName);
     }
 
     //查看Git仓库文件状态status
@@ -133,23 +124,87 @@ public class JGit {
         System.out.println(outputStream);
     }
 
+    //日志查看
+    public static void log() throws Exception{
+        Git git = getTestGit();
+        String msg = git.blame().setFilePath("level1/sss.txt").call().getSourceCommit(0).getFullMessage();
+
+        Iterable<RevCommit> commits = git.log().call();
+        int count = 0;
+        for (RevCommit commit : commits){
+            System.out.println("Commit:" + commit.getName());
+            System.out.println("Committer:" + commit.getAuthorIdent().getName());
+            System.out.println("Message:" + commit.getFullMessage());
+        }
+    }
+
+    /**
+     * 命令行操作git
+     */
+    public static void cmdOperation(String op){
+        Runtime run = Runtime.getRuntime();
+
+//        op = "cd /idea/repository/admin/bareRepo;ls";
+
+        try {
+            String[] cmd =new String[]{"powershell.exe",op};
+
+            Process p = run.exec(cmd);
+
+            InputStream is = p.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            p.waitFor();
+            if (p.exitValue() != 0) {
+                //说明命令执行失败
+                //可以进入到错误处理步骤中
+            }
+            String result = null;
+            String s = null;
+            while ((s = reader.readLine()) != null) {
+                result+=s + '\n';
+//                System.out.println(s);
+                p.waitFor();
+            }
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //获取测试仓库的Git对象
+    public static Git getTestGit() throws IOException, GitAPIException{
+        String userName = "admin";
+        String repoName = "bareRepo";
+        //仓库路径
+        String dir = "E:/idea/repository/" + userName + "/" + repoName + "/";
+
+//        现实仓库路径
+//        System.out.println(git2.getRepository().getDirectory());
+
+        return JGitUtils.getRepository(userName,repoName);
+    }
+
+
     public static void main(String[] args) throws Exception{
-        String remoteUrl = "E:/idea/repository/ppd-abui/testJGit";
-        String localUrl = "E:idea/repository/admin/clone";
 
-        File localPath = new File(localUrl);
-        System.out.println(localPath.isDirectory());
-        if(!localPath.delete()) {
-            throw new IOException("Could not delete temporary file " + localPath);
-        }
+        Git git = getTestGit();
 
-        // then clone
-        System.out.println("Cloning from " + remoteUrl + " to " + localPath);
-        try (Git result = Git.cloneRepository()
-                .setURI(remoteUrl)
-                .setDirectory(localPath)
-                .call()) {
-            System.out.println("Having repository: " + result.getRepository().getDirectory());
-        }
+//        git.remoteAdd()
+//                .setName("origin")
+//                .setUri(new URIish("E:/idea/repository/ppd-abui/bareRepo"))
+//                .call();
+
+//        git.pull()
+//                .setRemote("origin")
+//                .setRemoteBranchName("master")
+//                .call();
+
+//        git.fetch()
+//                .setRemote("origin")
+//                .setRefSpecs("refs/heads/master:refs/heads/temp")
+//                .call();
+
+        cmdOperation("cd /idea/repository/admin/bareRepo;ls");
     }
 }

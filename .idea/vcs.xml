@@ -9,8 +9,5 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/idea/repository/admin" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/idea/repository/admin/Clone" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/idea/repositoy/admin" vcs="Git" />
   </component>
 </project>

@@ -2,6 +2,7 @@ package gitter.server.utils;
 
 import gitter.server.entity.Repo;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.nio.file.Paths;
+import java.util.List;
 
 public class JGitUtils {
 
@@ -56,6 +58,32 @@ public class JGitUtils {
             e.printStackTrace();
             return false;
         }
+   }
+
+   //新建分支
+   public static boolean createNewBranch(String repoOwner,String repoName,
+                                         String sourceBranch,String newBranch){
+       try {
+           Git git = getRepository(repoOwner,repoName);
+
+           //获取所有分支
+           List<Ref> refs = git.branchList().call();
+           //检查是否重名
+           for(Ref ref:refs)
+               if(ref.getName().equals("refs/heads/" + newBranch))
+                   return false;
+
+           //签出到sourceBranch进行新建分支
+           git.checkout().setName(sourceBranch).call();
+
+           //新建分支
+           git.branchCreate().setName(newBranch).call();
+
+           return true;
+       } catch (Exception e) {
+           e.printStackTrace();
+           return false;
+       }
    }
 
    public static String getBaseDir(){

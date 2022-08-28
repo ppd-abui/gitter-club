@@ -44,14 +44,30 @@ public class FileTest {
         return fileData.toString();
     }
 
-
-    public static void main(String[] args) {
-        String path = JGitUtils.getBaseDir() + "admin/testToken/test.txt";
+    // 字符串转文件("测试文件内容", new File("D:/test.txt"));
+    public static void stringToFile(String text, String filePath) {
+        BufferedReader br = null;
+        BufferedWriter bw = null;
         try {
-            String data = fileToString(path);
+            br = new BufferedReader(new StringReader(text));
+            bw = new BufferedWriter(new FileWriter(new File(filePath)));
+            char[] buf = new char[1024 * 64];          //字符缓冲区
+            int len;
+            while ((len = br.read(buf)) != -1) {
+                bw.write(buf, 0, len);
+            }
+            bw.flush();
+            br.close();
+            bw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public static void main(String[] args) {
+        String path = JGitUtils.getBaseDir() + "admin/testToken/test.cpp";
+        stringToFile("adsklj",path);
 //        return null;
     }
 }

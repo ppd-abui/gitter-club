@@ -53,7 +53,7 @@ export default {
 
 <script setup lang="ts">
 import router from "../../router"
-import {createApp, reactive, ref} from 'vue'
+import {reactive, ref} from 'vue'
 import type { UploadInstance } from 'element-plus'
 
 let path = router.currentRoute.value.fullPath
@@ -78,7 +78,7 @@ function commitChanges(){
 }
 
 function filesUploadSuccess(res){
-  console.log(res)
+  router.push('/' + pathList[0] + '/' + pathList[1])
 }
 
 function cancel(){

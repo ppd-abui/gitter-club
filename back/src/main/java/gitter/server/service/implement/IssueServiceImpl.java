@@ -25,7 +25,7 @@ public class IssueServiceImpl extends ServiceImpl<IssueMapper,Issue>  implements
         }
     }
 
-    @Override
+    @Override//通过title名搜索issue
     public Issue selectByIssueTitle(Issue issue)
     {
         return issueMapper.selectOne(Wrappers.<Issue>lambdaQuery()
@@ -34,10 +34,26 @@ public class IssueServiceImpl extends ServiceImpl<IssueMapper,Issue>  implements
     }
 
     @Override
-    public List<Issue> selectListByRepoName(String repoOwner, String repoName){
+    public List<Issue> selectByRepoName(String repoOwner, String repoName){
         return issueMapper
                 .selectList(Wrappers.<Issue>lambdaQuery()
                         .eq(Issue::getIssueUsername,repoOwner)
                         .eq(Issue::getIssueReponame,repoName));
+    }
+    @Override
+    public Issue selectByIssueTitle(String repoOwner, String repoName,String issueTittle){
+        return issueMapper
+                .selectOne(Wrappers.<Issue>lambdaQuery()
+                        .eq(Issue::getIssueUsername,repoOwner)
+                        .eq(Issue::getIssueReponame,repoName)
+                        .eq(Issue::getIssueTitle,issueTittle));
+    }
+    @Override
+    public List<Issue> selectListByKeyword(String keyword,String repoOwner, String repoName){
+        return issueMapper
+                .selectList(Wrappers.<Issue>lambdaQuery()
+                        .like(Issue::getIssueTitle,keyword)
+                        .eq(Issue::getIssueReponame,repoName)
+                        .eq(Issue::getIssueUsername,repoOwner));
     }
 }

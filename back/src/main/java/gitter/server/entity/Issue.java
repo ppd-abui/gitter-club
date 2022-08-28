@@ -13,4 +13,6 @@ public class Issue {
     private  String issueContent;
     private  String issueUsername;
     private  String issueReponame;
+    private  String issueAssigners;
+    private  String issueState;
 }

@@ -1,35 +1,36 @@
 <template>
   <!--大标题-->
-  <span style="font-size:30px;font-family: 'Arial'">
+  <span style="font-size:30px;margin-left: 10px;font-family: 'Arial'">
     General
   </span>
   <el-divider />
 <!--Basic-->
-  <span style = "font-size: 22px">
+  <span style = "font-size: 22px;margin-left: 10px">
     Basic
     <br/> <br/>
   </span>
-  <el-form
-      label-width="200px"
-  >
-    <el-form-item label = "Repository Name">
-      <el-col :span="8">
-        <el-input v-model=localRepo.localRepoName placeholder="Repository Name" />
-      </el-col>
-      <el-col :span="5" style="margin-left: 20px">
-        <el-button @click="handleChangeRepoName">Rename</el-button>
-      </el-col>
+  <el-form label-width="10px">
+    <el-form-item><div> Repository Name </div> <br></el-form-item>
+
+    <el-form-item style="margin-top: -18px;display: flex">
+        <el-input style="width: 15%" v-model=localRepo.localRepoName placeholder="Repository Name" />
+        <el-button style="margin-left: 0.5%" @click="handleChangeRepoName">Rename</el-button>
     </el-form-item>
-    <el-form-item label="Repository Introduction">
-      <el-input v-model="localRepo.localRepoBio" type="textarea" :rows="4" />
+
+    <el-form-item><div> Repository Introduction </div> <br></el-form-item>
+
+    <el-form-item  style="margin-top: -18px">
+      <el-input style="width: 80%" v-model="localRepo.localRepoBio" type="textarea" :rows="4" />
     </el-form-item>
-    <el-form-item >
+
+    <el-form-item>
       <el-button @click="handleChangeRepoBio">Change the Repository Introduction</el-button>
     </el-form-item>
+
   </el-form>
   <el-divider />
 <!--Social view-->
-  <span style = "font-size: 22px">
+  <span style = "font-size: 22px;margin-left: 10px">
     Social view
     <br/><br/>
   </span>
@@ -54,18 +55,19 @@
 
   <el-divider></el-divider>
 <!--Danger Zone-->
-  <span style = "font-size: 22px;color: #cf222e">
+  <span style = "font-size: 22px;margin-left: 10px ;color: #cf222e">
     Danger Zone
-    <br/> <br/>
   </span>
 
-  <div class="rectangle" style="margin-top: 30px;position: relative">
+  <div class="rectangle" style="margin-top: 30px;position: relative;width: 80%; height: 350px">
 <!--Repository Visibility-->
     <div style="margin-left: 20px;margin-top: 20px">
-      <span style="font-size: 20px">
+      <span style="font-size: 20px;font-weight: bold">
         Repository Visibility
       </span>
-      <el-button style="margin-left: 20px;position: absolute;right: 10px" @click="visiVisible = true">
+      <el-button color="#f6f8fa"
+                 style="margin-top: 15px; margin-right: 5%; position: absolute;right: 10px;color:#d6442e;border: 1px #dddddd solid"
+                 @click="visiVisible = true">
         Change Visibility
       </el-button>
       <el-dialog
@@ -87,8 +89,7 @@
         <el-button  style="width: 100%;margin-top: 15px" @click="handleChangeVisibility">I understand,change repository visibility</el-button>
       </el-dialog>
 
-      <br/><br/>
-
+      <br> <br>
       <span style="font-size: 15px">
         Change the visibility of the repository
       </span>
@@ -97,14 +98,18 @@
 <!--        <el-option label="Public" value="1" @click="handleClickPublic"/>-->
 <!--        <el-option label="Private" value="0" @click="handleClickPrivate"/>-->
 <!--      </el-select>-->
+
     </div>
     <el-divider></el-divider>
-<!--Transfer Visibility-->
+<!--Transfer Ownership-->
     <div style="margin-left: 20px;margin-top: 20px">
-      <span style="font-size: 20px">
+      <span style="font-size: 20px;font-weight: bold">
         Transfer ownership
       </span>
-      <el-button style="margin-left: 20px;position: absolute;right: 10px" @click="repoVisible = true">
+
+      <el-button color="#f6f8fa"
+                 style="margin-top: 15px; margin-right: 5%; position: absolute;right: 10px;color:#d6442e;border: 1px #dddddd solid"
+                 @click="repoVisible = true">
         Transfer
       </el-button>
       <el-dialog
@@ -134,10 +139,12 @@
     <el-divider/>
 <!-- Delete Repository -->
     <div style="margin-left: 20px;margin-top: 20px">
-      <span style="font-size: 20px">
+      <span style="font-size: 20px;font-weight: bold">
         Delete this repository
       </span>
-      <el-button style="margin-left: 20px;position: absolute;right: 10px" @click="delVisible = true">
+      <el-button color="#f6f8fa"
+                 style="margin-top: 15px; margin-right: 5%; position: absolute;right: 10px;color:#d6442e;border: 1px #dddddd solid"
+                 @click="delVisible = true">
         Delete
       </el-button>
       <el-dialog
@@ -296,7 +303,7 @@ const  handleChangeRepoBio = () => {
       .catch(() => {
         ElMessage({
           type: 'info',
-          message: 'Rename canceled',
+          message: 'Modify repository bio canceled',
         })
       })
 }

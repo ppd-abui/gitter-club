@@ -4,18 +4,17 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import gitter.server.common.FileType;
 import gitter.server.common.Result;
-import gitter.server.service.UserService;
 import gitter.server.utils.JGitUtils;
 import org.eclipse.jgit.api.Git;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -81,11 +80,29 @@ public class FileController {
     }
 
     @GetMapping("/tree")
-    public Result<?> getFiles(@RequestParam String repoOwner,@RequestParam String repoName,
-                         @RequestParam String branch,@RequestParam String suffixDir){
+    public Result<?> getFiles(@RequestParam(defaultValue = "") String repoOwner,
+                              @RequestParam(defaultValue = "testToken") String repoName,
+                              @RequestParam(defaultValue = "") String branch,
+                              @RequestParam(defaultValue = "" ) String suffixDir){
 
+        if (repoOwner.equals("")||repoName.equals(""))
+            return new Result<>(200,null,"不应该的请求！");
+
+        Git git;
+        //切换分支
+        try {
+            git = JGitUtils.getRepository(repoOwner,repoName);
+            git.checkout().setName(branch).call();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500,null,"Change branch failed!");
+        }
+
+        //获取路径
         String path = JGitUtils.getBaseDir() + repoOwner + '/' + repoName + '/' + suffixDir;
         File file = new File(path);
+
+        //若为文件: File->String 回传
         if (file.isFile()){
             try {
                 String data = fileToString(file.getPath());
@@ -96,21 +113,41 @@ public class FileController {
             }
         }
 
+        //路径为目录：获得文件夹信息回传
         File[] files = file.listFiles();
         List<FileType> fileTypes = new ArrayList<>();
-        assert files != null;
 
+        assert files != null;
         for(File f:files){
-            if (f.isHidden())
-                continue;
-            else if (f.isDirectory())
-                fileTypes.add(new FileType("Dir",f.getName()));
-            else if (f.isFile())
-                fileTypes.add(new FileType("File",f.getName()));
+            FileType fileType = fileToFileType(f,git,suffixDir);
+            if(fileType!=null)
+                fileTypes.add(fileType);
         }
         return new Result<>(200,fileTypes,"Directory");
     }
 
+    @GetMapping("/files/save")
+    public Result<?> fileSave(@RequestParam String fileContent,@RequestParam String suffixDir){
+        String filePath = JGitUtils.getBaseDir() + suffixDir;
+        if(stringToFile(fileContent,filePath)){
+            try {
+                String[] suffixDirs = suffixDir.split("/");
+
+                //git add *
+                Git git = JGitUtils.getRepository(suffixDirs[0],suffixDirs[1]);
+                git.add().addFilepattern(".").call();
+                //git commit
+                git.commit().setMessage("Modify " + suffixDirs[suffixDirs.length-1]).call();
+
+                return new Result<>(200,null,"File written successfully!");
+            } catch (Exception e) {
+                e.printStackTrace();
+                return new Result<>(500,null,"File save failed!");
+            }
+        }
+        else
+            return new Result<>(500,null,"File save failed!");
+    }
 
     //将File转化成String
     private static String fileToString(String filePath) throws IOException {
@@ -126,21 +163,62 @@ public class FileController {
         }
         //缓冲区使用完必须关掉
         reader.close();
-        System.out.println(fileData.toString());
         return fileData.toString();
     }
 
-    @GetMapping("/test")
-    public Result<?> test(HttpServletResponse response){
-        String path = JGitUtils.getBaseDir() + "admin/testToken/test.cpp";
-        String data = null;
+    private static FileType fileToFileType(File file, Git git,String suffixDir){
+
+        if (file.isHidden())
+            return null;
+
+        try{
+            FileType fileType = new FileType();
+
+            if(!suffixDir.equals(""))
+                suffixDir+='/';
+
+            String fileName = file.getName();
+            String filePath = suffixDir + fileName;
+            String lastCommitMessage =
+                    git.blame()
+                            .setFilePath(filePath)
+                            .call()
+                            .getSourceCommit(0)
+                            .getFullMessage();
+
+            fileType.setFileName(fileName);
+            fileType.setLastCommitMessage(lastCommitMessage);
+
+            if (file.isDirectory())
+                fileType.setFileType("Dir");
+            else
+                fileType.setFileType("File");
+
+            return fileType;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static boolean stringToFile(String fileContent,String filePath){
+        BufferedReader br = null;
+        BufferedWriter bw = null;
         try {
-            data = fileToString(path);
-            System.out.println(data);
-            return new Result<>(200,data,"");
+            br = new BufferedReader(new StringReader(fileContent));
+            bw = new BufferedWriter(new FileWriter(filePath));
+            char[] buf = new char[1024 * 64];          //字符缓冲区
+            int len;
+            while ((len = br.read(buf)) != -1) {
+                bw.write(buf, 0, len);
+            }
+            bw.flush();
+            br.close();
+            bw.close();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            return new Result<>(500,null,"System error!");
+            return false;
         }
     }
 }

@@ -103,10 +103,17 @@ const routes = [
                 },{
                   path: 'newissue',
                   component: () => import('../components/CreateIssue.vue')
-                }, {
+                },{
                   path: 'pull',
-                  component: () => import('../components/Pull.vue')
-                }, {
+                  component: () => import('../components/Pull.vue'),
+                  children: [{
+                    path: ':pullname',
+                    component: () => import('../components/PullRequest.vue')
+                  }]
+                },{
+                  path: 'newrequest',
+                  component: () => import('../components/CreateRequest.vue')
+                },{
                   path: 'settings',
                   component: () => import('../components/RepositorySetting.vue'),
                   redirect: '/' + repoOwner + '/' + repoName + '/settings/general',

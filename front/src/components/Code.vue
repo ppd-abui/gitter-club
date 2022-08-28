@@ -159,7 +159,7 @@ import {ElMessage} from "element-plus";
 
   let nowBranch = ref('')
   nowBranch.value=pathList[3]
-  let branchList = ref(['master','newBranch','anotherNewBranch'])
+  let branchList = ref([])
 
   request.get('/repo/name',{
     params: {
@@ -174,18 +174,15 @@ import {ElMessage} from "element-plus";
     repo.repoVisibility=res.data.repoVisibility
   })
 
-  // request.get('/repo/name',{
-  //   params: {
-  //     repoOwner: pathList[0],
-  //     repoName: pathList[1]
-  //   }
-  // }).then(res => {
-  //   repo.repoId=res.data.repoId
-  //   repo.repoName=res.data.repoName
-  //   repo.repoOwner=res.data.repoOwner
-  //   repo.repoBio=res.data.repoBio
-  //   repo.repoVisibility=res.data.repoVisibility
-  // })
+  request.get('/repo/branches',{
+    params: {
+      repoOwner: pathList[0],
+      repoName: pathList[1]
+    }
+  }).then(res => {
+    console.log(res)
+    branchList.value=res.data
+  })
 
   const dialogVisible = ref(false)
   let ifBranchSwitchShow = ref(false)

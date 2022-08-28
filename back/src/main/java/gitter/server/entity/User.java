@@ -18,4 +18,5 @@ public class User {
     private Date userBirthday;
     private String userSex;
     private String userFollowRepositories;
+    private String userStars;
 }

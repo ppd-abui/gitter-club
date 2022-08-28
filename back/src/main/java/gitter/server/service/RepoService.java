@@ -15,4 +15,7 @@ public interface RepoService extends IService<Repo> {
     Repo selectByRepoName(Repo repo);
     List<Repo> selectListByRepoOwner(Repo repo);
     List<Repo> selectListByKeyword(String keyword);
+    boolean createNewBranch(Repo repo, String sourceBranch,String newBranch);
+    boolean updateRepo(Repo repo);
+    boolean deleteRepo(Repo repo);
 }

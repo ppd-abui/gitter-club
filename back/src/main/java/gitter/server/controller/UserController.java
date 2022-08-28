@@ -60,4 +60,93 @@ public class UserController {
             return new Result<>(500,null,"Search failed!");
         }
     }
+
+    @GetMapping("/user/star")
+    public Result<?> getUserStar(@RequestParam String userAccount) {
+        try {
+            User user = userService.selectByUserAccount(userAccount);
+            String userStarsString = user.getUserStars();
+
+            String [] starsList ;
+
+            if(userStarsString != null)
+                starsList = userStarsString.split("_");
+            else
+                starsList = null;
+            return new Result<>(200,starsList,"All the star repos");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500, null, "Stars failed!");
+        }
+    }
+    @GetMapping("user/star/change")
+    public Result<?> changeUserStar(@RequestParam String userAccount,@RequestParam String repoName,@RequestParam boolean testStar){
+        //获得Star列表
+        User user = userService.selectByUserAccount(userAccount);
+        System.out.println(user);
+        String userStarsString = user.getUserStars();
+        System.out.println(userStarsString);
+
+        String [] starsList ;
+        if( userStarsString != null || !userStarsString.equals(""))
+            starsList = userStarsString.split("_");
+        else
+            starsList = null;
+
+        String userStarsStringNew = "";
+
+        System.out.println(testStar);
+
+        //根据testStar选择操作
+        try{
+            if(testStar == true){
+                for(int i = 0;i < starsList.length;i++)
+                    if(!starsList[i].equals(repoName))
+                        userStarsStringNew += (starsList[i]+"_");
+                System.out.println("delete"+userStarsStringNew);
+            }
+            else{
+                if(userStarsString == null || userStarsString.equals(""))
+                    userStarsStringNew = repoName+"_";
+                else
+                    userStarsStringNew = userStarsString+repoName+"_";
+                System.out.println(userStarsStringNew);
+            }
+
+            System.out.println("7277272727272");
+            user.setUserStars(userStarsStringNew);
+            user.setUserName("111111111");
+            System.out.println(user);
+            userService.updateById(user);
+
+            return  new Result<>(200,null,"The change is completed!");
+        }catch (Exception e){
+            e.printStackTrace();
+            return new Result<>(500, null, "Stars failed!");
+        }
+    }
+
+    @GetMapping("/user/star/check")
+    public Result<?> checkUserStar(@RequestParam String userAccount,@RequestParam String repoName) {
+        try {
+            User user = userService.selectByUserAccount(userAccount);
+            String userStarsString = user.getUserStars();
+
+            String [] starsList ;
+
+            if(userStarsString != null) {
+                starsList = userStarsString.split("_");
+                for(String item : starsList){
+                    System.out.println(item);
+                    System.out.println(repoName);
+                    if(item.equals(repoName))
+                        return new Result<>(200,1,"Exist");
+                }
+            }
+            return new Result<>(200,0,"nop");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500, null, "Stars failed!");
+        }
+    }
 }

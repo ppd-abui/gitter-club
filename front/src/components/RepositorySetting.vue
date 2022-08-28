@@ -6,7 +6,7 @@ export default {
 
 <template>
   <el-container style = "margin-left: 20px;margin-top: 10px">
-    <el-aside width = "200px">
+    <el-aside width = "13%">
       <el-menu
         default-active="choose"
         >
@@ -18,8 +18,9 @@ export default {
           <el-icon><User /></el-icon>
           <span>Collaborator</span>
         </el-menu-item>
-
       </el-menu>
+
+      <el-divider direction="vertical" style="height: 950px;margin-left: 99.9%"/>
     </el-aside>
     <el-main>
       <router-view/>

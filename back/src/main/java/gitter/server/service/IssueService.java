@@ -10,5 +10,7 @@ public interface IssueService  extends IService<Issue> {
     boolean createIssue(Issue issue);
     //通过工单名搜索工单（账号+仓库名)
     Issue selectByIssueTitle(Issue issue);
-    List<Issue> selectListByRepoName(String repoOwner, String repoName);
+    List<Issue> selectByRepoName(String repoOwner, String repoName);
+    Issue selectByIssueTitle(String repoOwner, String repoName,String issueTitle);
+     List<Issue> selectListByKeyword(String keyword,String repoOwner, String repoName);
 }

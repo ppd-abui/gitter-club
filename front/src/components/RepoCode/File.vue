@@ -45,6 +45,7 @@ import router from '../../router'
 import {ref} from "vue";
 import request from "../../utils/request";
 import {watchEffect} from "vue";
+import {ElMessage} from "element-plus";
 
   let isDir = ref(true)
   let path = router.currentRoute.value.fullPath
@@ -65,7 +66,8 @@ import {watchEffect} from "vue";
       iter++
     }
 
-
+    if(suffixDir!=='')
+      suffixDir=suffixDir.substr(1)
 
     console.log('---------branch',branch,'----------suffixDir:',suffixDir)
     //发送请求获取目录
@@ -77,6 +79,7 @@ import {watchEffect} from "vue";
         suffixDir: suffixDir
       }
     }).then(res => {
+      console.log(res)
       if (res.code === 200) {
         if (res.msg==='Directory') {
           console.log('this is Directory')
@@ -103,6 +106,40 @@ import {watchEffect} from "vue";
 
   function saveFile(){
 
+    let pathList = path.substr(1).split('/')
+
+    //包含repoOwner和repoName的suffixDir
+    let suffixDir = pathList[0] + '/' + pathList[1]
+
+    let iter = 4
+    while (pathList.length > 4 && iter < pathList.length) {
+      suffixDir = suffixDir + '/' + pathList[iter]
+      iter++
+    }
+
+    console.log('suffixDir:',suffixDir)
+    let contentLength = fileContent.value.length - 8
+    console.log('fileContent:',fileContent.value.substr(4,contentLength))
+
+    request.get("/files/save",{
+      params:{
+        fileContent:fileContent.value.substr(4,contentLength),
+        suffixDir:suffixDir
+      }
+    }).then(res=>{
+      if(res.code === 200){
+        ElMessage({
+          type:'success',
+          message:'Save successfully!'
+        })
+      } else {
+        ElMessage({
+          type:'error',
+          message:'System error!'
+        })
+      }
+
+    })
   }
 
   function flesh(){
