@@ -4,8 +4,10 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import gitter.server.common.FileType;
 import gitter.server.common.Result;
+import gitter.server.utils.CmdUtils;
 import gitter.server.utils.JGitUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -59,21 +60,34 @@ public class FileController {
         }
     }
 
-    @GetMapping("/{flag}")
-    public void download(@PathVariable String flag, HttpServletResponse response) {
+    @GetMapping("/download")
+    public void download(@RequestParam String repoOwner,
+                         @RequestParam String repoName,
+                         @RequestParam(defaultValue = "HEAD") String sha,
+                         HttpServletResponse response) {
         OutputStream os;
-        List<String> fileNames = FileUtil.listFileNames(JGitUtils.getBaseDir());
-        String fileName = fileNames.stream().filter(name -> name.equals(flag)).findAny().orElse("");
+        String fileName = repoName + ".zip";
+
+        //压缩
+        String opZip = "cd " + JGitUtils.getBaseDir() + repoOwner + '/' + repoName + ";"
+                + "git archive -o " + fileName + " " + sha;
+        CmdUtils.run(opZip);
+
         try {
-            if (StrUtil.isNotEmpty(fileName)) {
-                response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-                response.setContentType("application/octet-stream");
-                byte[] bytes = FileUtil.readBytes(JGitUtils.getBaseDir() + fileName);
-                os = response.getOutputStream();
-                os.write(bytes);
-                os.flush();
-                os.close();
-            }
+
+            response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.setContentType("application/octet-stream");
+            byte[] bytes = FileUtil.readBytes(JGitUtils.getBaseDir() + repoOwner + '/' + repoName + '/' + fileName);
+            os = response.getOutputStream();
+            os.write(bytes);
+            os.flush();
+            os.close();
+
+            //删除压缩包
+            String opRm = "cd " + JGitUtils.getBaseDir() + repoOwner + '/' + repoName + ";"
+                    + "rm " + fileName;
+            CmdUtils.run(opRm);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,11 +95,12 @@ public class FileController {
 
     @GetMapping("/tree")
     public Result<?> getFiles(@RequestParam(defaultValue = "") String repoOwner,
-                              @RequestParam(defaultValue = "testToken") String repoName,
+                              @RequestParam(defaultValue = "") String repoName,
                               @RequestParam(defaultValue = "") String branch,
                               @RequestParam(defaultValue = "" ) String suffixDir){
 
-        if (repoOwner.equals("")||repoName.equals(""))
+
+        if (repoOwner.equals("")||repoName.equals("")||branch.equals(""))
             return new Result<>(200,null,"不应该的请求！");
 
         Git git;
@@ -106,8 +121,9 @@ public class FileController {
         if (file.isFile()){
             try {
                 String data = fileToString(file.getPath());
+                git.checkout().setName("master").call();
                 return new Result<>(200,data,"File");
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 return new Result<>(500,null,"System error!");
             }
@@ -123,7 +139,13 @@ public class FileController {
             if(fileType!=null)
                 fileTypes.add(fileType);
         }
-        return new Result<>(200,fileTypes,"Directory");
+        try {
+            git.checkout().setName("master").call();
+            return new Result<>(200,fileTypes,"Directory");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500,null,"System error!");
+        }
     }
 
     @GetMapping("/files/save")

@@ -90,7 +90,10 @@ const routes = [
                     path: ':tab*',
                     component: () => import('../components/RepoCode/File.vue')
                   }]
-                }, {
+                },{
+                  path: 'history',
+                  component: () => import('../components/RepoCode/History.vue')
+                },{
                   path: 'issues',
                   component: () => import('../components/Issues.vue'),
                   children: [{
@@ -105,8 +108,10 @@ const routes = [
                   component: () => import('../components/CreateIssue.vue')
                 },{
                   path: 'pull',
-                  component: () => import('../components/Pull.vue'),
                   children: [{
+                    path: '',
+                    component: () => import('../components/Pull.vue')
+                  },{
                     path: ':pullname',
                     component: () => import('../components/PullRequest.vue')
                   }]
@@ -134,7 +139,7 @@ const routes = [
               })
             }
             console.log('added repo route',router.getRoutes())
-            let set = ['code','issues','pull','settings','upload','new','newissue','newrequest']
+            let set = ['code','issues','pull','settings','upload','new','newissue','newrequest','history']
             if (pathList.length===2) next(to.path)
             else if (set.indexOf(pathList[2])===-1) next('/404')
             else next(to.path)

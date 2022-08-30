@@ -3,10 +3,12 @@ package gitter.server.controller;
 import gitter.server.common.Result;
 import gitter.server.entity.Repo;
 import gitter.server.entity.User;
+import gitter.server.service.RepoService;
 import gitter.server.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,6 +18,9 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RepoService repoService;
 
     @PostMapping("/login")
     public Result<?> login(@RequestBody User user){
@@ -39,7 +44,7 @@ public class UserController {
         if(res == null)
             return new Result<>(200,null,"The account is available!");
         else
-            return new Result<>(500,null,"");
+            return new Result<>(500,res,"");
     }
 
     @PostMapping("/register")
@@ -79,13 +84,38 @@ public class UserController {
             return new Result<>(500, null, "Stars failed!");
         }
     }
+    @GetMapping("/user/star/repo")
+    public Result<?> getUserStarRepo(@RequestParam String userAccount) {
+        try {
+            User user = userService.selectByUserAccount(userAccount);
+            String userStarsString = user.getUserStars();
+
+            String [] starsList ;
+
+            List<Repo> repos  = new ArrayList<>();
+
+            if(userStarsString != null) {
+                starsList = userStarsString.split("_");
+                for(String item:starsList){
+                    Repo repo = new Repo();
+                    repo.setRepoName(item);
+                    repos.add(repoService.selectByRepoNameOnly(repo));
+                }
+            }
+            else
+                starsList = null;
+            return new Result<>(200,repos,"All the star repos");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500, null, "Stars failed!");
+        }
+    }
+
     @GetMapping("user/star/change")
     public Result<?> changeUserStar(@RequestParam String userAccount,@RequestParam String repoName,@RequestParam boolean testStar){
         //获得Star列表
         User user = userService.selectByUserAccount(userAccount);
-        System.out.println(user);
         String userStarsString = user.getUserStars();
-        System.out.println(userStarsString);
 
         String [] starsList ;
         if( userStarsString != null || !userStarsString.equals(""))
@@ -95,28 +125,22 @@ public class UserController {
 
         String userStarsStringNew = "";
 
-        System.out.println(testStar);
-
         //根据testStar选择操作
         try{
             if(testStar == true){
                 for(int i = 0;i < starsList.length;i++)
                     if(!starsList[i].equals(repoName))
                         userStarsStringNew += (starsList[i]+"_");
-                System.out.println("delete"+userStarsStringNew);
             }
             else{
                 if(userStarsString == null || userStarsString.equals(""))
                     userStarsStringNew = repoName+"_";
                 else
                     userStarsStringNew = userStarsString+repoName+"_";
-                System.out.println(userStarsStringNew);
             }
 
-            System.out.println("7277272727272");
             user.setUserStars(userStarsStringNew);
-            user.setUserName("111111111");
-            System.out.println(user);
+
             userService.updateById(user);
 
             return  new Result<>(200,null,"The change is completed!");
@@ -137,8 +161,6 @@ public class UserController {
             if(userStarsString != null) {
                 starsList = userStarsString.split("_");
                 for(String item : starsList){
-                    System.out.println(item);
-                    System.out.println(repoName);
                     if(item.equals(repoName))
                         return new Result<>(200,1,"Exist");
                 }
@@ -148,5 +170,47 @@ public class UserController {
             e.printStackTrace();
             return new Result<>(500, null, "Stars failed!");
         }
+    }
+
+    @GetMapping("/user/change/name")
+    public Result<?> changeUserName(@RequestParam String userAccount,@RequestParam String userNameNew) {
+        User res = userService.selectByUserAccount(userAccount);
+        res.setUserName(userNameNew);
+
+        if(userService.updateUser(res))
+            return new Result<>(200,res,"Change the name successfully");
+        else
+            return new Result<>(500,null,"The change meets some mistake");
+    }
+
+    @GetMapping("/user/change/account")
+    public Result<?> changeUserAccount(@RequestParam String userAccount,@RequestParam String userAccountNew) {
+        User res = userService.selectByUserAccount(userAccount);
+        res.setUserAccount(userAccountNew);
+
+        if(userService.updateUser(res))
+            return new Result<>(200,res,"Change the account successfully");
+        else
+            return new Result<>(500,res,"The change meets some mistake");
+    }
+    @GetMapping("/user/change/password")
+    public Result<?> changeUserPassword(@RequestParam String userAccount,@RequestParam String userPasswordNew) {
+        User res = userService.selectByUserAccount(userAccount);
+        res.setUserPassword(userPasswordNew);
+
+        if(userService.updateUser(res))
+            return new Result<>(200,res,"Change the password successfully");
+        else
+            return new Result<>(500,res,"The change meets some mistake");
+    }
+    @GetMapping("/user/change/sex")
+    public Result<?> changeUserSex(@RequestParam String userAccount,@RequestParam String userSexNew) {
+        User res = userService.selectByUserAccount(userAccount);
+        res.setUserSex(userSexNew);
+
+        if(userService.updateUser(res))
+            return new Result<>(200,res,"Change the sex successfully");
+        else
+            return new Result<>(500,res,"The change meets some mistake");
     }
 }

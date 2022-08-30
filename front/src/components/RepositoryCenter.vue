@@ -26,15 +26,15 @@
         </el-row>
       <!-- 仓库信息展示-->
       <el-col :span ="30" v-for = "repo in repoInfo"  mode = "vertical">
-        <div id = "card">
+        <div id = "card" >
           <el-divider>
             <el-icon><star-filled /></el-icon>
           </el-divider>
           <el-button text style="font-family: Calibri;font-size: 35px;color: limegreen" @click="gotoRepo(repo.repoName)">{{repo.repoName}}</el-button>
           <el-tag style="margin-left:10px" size = small >{{ repo.repoVisibility }}</el-tag>
-<!--          <div style = "float:right;margin-right: 20px">-->
-<!--            <el-button  :icon="item.star==0 ?Star:StarFilled"  @click="testStar(item.star)" > Star</el-button>-->
-<!--          </div>-->
+          <div style = "float:right;margin-right: 20px">
+            <el-button  :icon="isStar(repo.repoName) ?StarFilled:Star"  @click=" changeStar(isStar(repo.repoName),repo.repoName )" > Star</el-button>
+          </div>
           <br/>
           <span style="font-size: 20px;margin-top: 8px;margin-left: 14px">
                   {{repo.repoBio}}
@@ -61,9 +61,10 @@ import {ref, reactive, onBeforeMount} from 'vue'
 import { Search,Star,StarFilled } from '@element-plus/icons-vue'
 import request from "../utils/request";
 import router from "../router/index.js"
+import {ElMessageBox,ElMessage} from "element-plus";
 
 let path = router.currentRoute.value.fullPath
-let pathList = path.substr(1).split('/')
+let pathList = path.substr(1).split('?')
 
 let repoInfo = ref([]);
 
@@ -75,6 +76,7 @@ const input = ref("")
 //获取仓库信息
 onBeforeMount(()=>{
   set();
+  getStarInfo();
 })
 
 function set(){
@@ -83,26 +85,16 @@ function set(){
         userAccount:pathList[0]
       }
     }).then(res=>{
-          console.log(res);
           repoInfo.value = res.data;
         }
     )
 }
 
 function gotoRepo(name){
-  let repoUrl = pathList[0]+'/'+name+'/code';
-  console.log("111111");
-  console.log(repoUrl);
+  let repoUrl = pathList[0]+'/'+name+'/code/master';
   router.push(repoUrl);
 }
 
-function testStar(bool){
-  if(bool == 1)
-    bool = 0;
-  else
-    bool = 1;
-  this.reload();
-}
 
 let repo = reactive({
   repoID:'',
@@ -113,6 +105,68 @@ let repo = reactive({
 
 function gotoNew(){
   router.push({path: '/new'})
+}
+
+//--------------------------------------------------------------------------------------
+
+let starInfo= ref([])
+
+//获得用户收藏夹
+function getStarInfo(){
+  request.get('/user/star',{
+    params:{
+      userAccount:pathList[0]
+    }
+  }).then(res=>{
+        starInfo.value = res.data;
+      }
+  )
+}
+
+function isStar(name){
+  return starInfo.value.indexOf(name) !== -1;
+}
+
+
+const  changeStar = (isStarred,repoNameTemp) => {
+  ElMessageBox.confirm(
+      'Do you want to change the star?',
+      'Warning',
+      {
+        confirmButtonText: 'OK',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
+      }
+  ).then(() => {
+        changeStarFunction(isStarred,repoNameTemp)
+        router.go(0)
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: 'change canceled',
+        })
+      })
+}
+
+function changeStarFunction(isStarred,repoNameTemp){
+  request.get('user/star/change',{
+    params:{
+      userAccount:pathList[0],
+      repoName:repoNameTemp,
+      testStar:isStarred,
+    }
+  }).then(res=>{
+      if(res.code == 200)ElMessage({
+        type: 'success',
+        message: res.msg,
+      })
+      if(res.code == 500)
+        ElMessage({
+        type: 'info',
+        message: res.msg,
+      })
+  })
 }
 
 </script>

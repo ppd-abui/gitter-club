@@ -11,12 +11,12 @@ export default {
       background-color="#000000"
       style="height: 60px"
   >
-    <img @click="goto('home')" style="margin-top: 5px ;margin-bottom: 7px;margin-left: 15px; height:80% " src="../assets/white.png">
+    <img @click="goto('home')" style="cursor: pointer;margin-top: 5px ;margin-bottom: 7px;margin-left: 15px; height:80% " src="../assets/white.png">
 
     <el-input style=" background-color: transparent; border: none; width: 300px; height: 25px; margin-top:17px; margin-left: 15px" v-model="input" placeholder="Search repositories...">
     </el-input>
-    <el-icon @click="searchRepo(input)" color="white" style="position: relative; top: 24px; left: 10px"><Search/></el-icon>
-    <img @click="gotoSpace()" style="position: absolute; right: 20px; margin-top: 5px ; height:80%" src="../assets/white.png">
+    <el-icon @click="searchRepo(input)" color="white" style="cursor: pointer;position: relative; top: 24px; left: 10px"><Search/></el-icon>
+    <img @click="gotoSpace()" style="cursor: pointer; position: absolute; right: 20px; margin-top: 5px ; height:80%" src="../assets/white.png">
   </el-menu>
 </template>
 

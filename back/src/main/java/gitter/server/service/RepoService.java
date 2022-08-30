@@ -1,6 +1,7 @@
 package gitter.server.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import gitter.server.common.Commit;
 import gitter.server.entity.Repo;
 import gitter.server.entity.User;
 
@@ -16,6 +17,9 @@ public interface RepoService extends IService<Repo> {
     List<Repo> selectListByRepoOwner(Repo repo);
     List<Repo> selectListByKeyword(String keyword);
     boolean createNewBranch(Repo repo, String sourceBranch,String newBranch);
+    List<Commit> selectCommitListByRepoAndBranch(Repo repo,String branch);
     boolean updateRepo(Repo repo);
     boolean deleteRepo(Repo repo);
+    Repo selectByRepoNameOnly(Repo repo);
+
 }

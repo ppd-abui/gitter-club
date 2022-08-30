@@ -67,4 +67,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .selectList(Wrappers.<User>lambdaQuery()
                         .like(User::getUserAccount,keyword));
     }
+
+    @Override
+    public boolean updateUser(User user){
+        try {
+            userMapper.updateById(user);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

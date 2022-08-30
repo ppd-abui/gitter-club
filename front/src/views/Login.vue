@@ -52,7 +52,7 @@ export default {
           <div style="width: 100%; display: flex">
 <!--  register link-->
             <el-link style="font-size: 20px; font-family: Centaur; margin: auto;
-                        color: #1E97D4" href="../register">Create an Account</el-link>
+                        color: #1E97D4" @click="goToRegister">Create an Account</el-link>
           </div>
         </el-form-item>
       </el-form>
@@ -117,9 +117,12 @@ export default {
             })
       }
     })
-
-
   }
+
+  function goToRegister(){
+    router.push('/register')
+  }
+
 </script>
 
 <style scoped>

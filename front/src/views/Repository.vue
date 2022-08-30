@@ -21,7 +21,7 @@ export default {
         <div  style="display: flex; margin-left: 20px; margin-top: 20px">
           <div style="width: 20px; height: 20px; margin-left: 10px; position: relative; top: 8px"><Collection/></div>
           <div style="margin: 0px 0 0 10px; display: flex">
-            <el-link href="/space" type="primary" style="font-size: 24px; font-family: 'Calibri Light'">{{repo.repoOwner}}</el-link>
+            <el-link @click="goToPersonCenter" type="primary" style="font-size: 24px; font-family: 'Calibri Light'">{{repo.repoOwner}}</el-link>
             <div style="font-size: 24px; margin: 0 10px 0 10px">/</div>
             <el-link type="primary" style="font-size: 24px; font-family: 'Calibri Light'; font-weight: bold">{{repo.repoName}}</el-link>
           </div>
@@ -221,8 +221,7 @@ function changeStar(){
         cancelButtonText: 'Cancel',
         type: 'warning',
       }
-  )
-      .then(() => {
+  ).then(() => {
         console.log("The function is ddddddddd")
         console.log(check.value)
         changeStarFunction()
@@ -234,6 +233,10 @@ function changeStar(){
           message: 'change canceled',
         })
       })
+}
+
+function goToPersonCenter(){
+  router.push('/' + pathList[0])
 }
 
 </script>

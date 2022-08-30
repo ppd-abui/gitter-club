@@ -67,7 +67,7 @@ export default {
                 font-family: Centaur;
                 margin: auto;
                 color: #1E97D4"
-                href="../login">
+                @click="goToLogin">
               Sign in for GitterClub
             </el-link>
           </div>
@@ -169,6 +169,10 @@ function submit(formEl: FormInstance | undefined) {
       return false
     }
   })
+}
+
+function goToLogin(){
+  router.push('/login')
 }
 
 //重置所有输入的内容

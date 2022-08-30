@@ -63,7 +63,7 @@ public class PullRequestServiceImpl extends ServiceImpl<PullRequestMapper, PullR
         //在fetch的时候仓库新建了一个与用户同名的分支
         String branch = pullRequest.getPullRequestCreator();
 
-        String op = "cd /idea/repository/" + repoOwner + '/' + repoName + ";"
+        String op = "cd " + JGitUtils.getBaseDir() + repoOwner + '/' + repoName + ";"
                 + "git diff " + branch;
 
         return CmdUtils.run(op);
@@ -78,13 +78,13 @@ public class PullRequestServiceImpl extends ServiceImpl<PullRequestMapper, PullR
         String branch = pullRequest.getPullRequestCreator();
 
         //合并分支命令
-        String opMerge = "cd /idea/repository/" + repoOwner + '/' + repoName + ";"
+        String opMerge = "cd " + JGitUtils.getBaseDir() + repoOwner + '/' + repoName + ";"
                 + "git merge " + branch;
         CmdUtils.run(opMerge);
 
         //合并后删除fetch的分支
-        String opDelete = "cd /idea/repository/" + repoOwner + '/' + repoName + ";"
-                + "git branch -D" + branch;
+        String opDelete = "cd " + JGitUtils.getBaseDir() + repoOwner + '/' + repoName + ";"
+                + "git branch -D " + branch;
         CmdUtils.run(opDelete);
 
         return true;

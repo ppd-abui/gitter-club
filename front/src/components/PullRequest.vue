@@ -6,16 +6,19 @@ export default {
 
 
 <template>
-  <div>
-    <el-input v-model="diff" style="margin-top: 50px;margin-left: 50px; height: 500px" type="textarea"> </el-input>
+  <div style="width: 100%">
+    <div style="margin: 20px auto; width: 60%">
+      <div style="font-family: Calibri; font-size: 36px; text-align: center">Confirm to merge</div>
+      <div style="border: #e7e7e7 solid 2px; border-radius: 10px; padding: 10px; margin: 20px auto; width: 100%">
+          <el-input v-model="diff" autosize style="width: 100%; font-size: 20px" type="textarea"> </el-input>
+      </div>
+      <div>
+        <el-button style="float: right; width: 100px" type="primary" @click="merge">
+          merge
+        </el-button>
+      </div>
+    </div>
   </div>
-
-  <div>
-    <el-button style="margin-left: 50px;margin-top: 50px" @click="merge">
-      merge
-    </el-button>
-  </div>
-
 </template>
 
 <script setup lang="ts">
@@ -35,7 +38,7 @@ request.get('/pulls/diff',{
   }
 }).then(res=>{
   if (res.code === 200 && res.data !=null)
-    diff.value = res.data.substr(4)
+    diff.value = res.data
   else
     diff.value = "Nothing changes!"
 })
@@ -57,6 +60,7 @@ function merge(){
           type:'success',
           message:'Merge successfully!'
         })
+        router.push('/'+pathList[0] + '/'+pathList[1]+ '/pull')
       } else {
         ElMessage({
           type:'error',

@@ -5,6 +5,7 @@ import gitter.server.entity.Repo;
 import gitter.server.entity.User;
 import gitter.server.service.RepoService;
 import gitter.server.service.UserService;
+import gitter.server.utils.CmdUtils;
 import gitter.server.utils.JGitUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
@@ -120,16 +121,6 @@ public class RepoController {
         }
     }
 
-    @GetMapping("/branch/new")
-    public Result<?> createNewBranch(@RequestBody Repo repo,
-                                     @RequestParam String sourceBranch,
-                                     @RequestParam String newBranch){
-        if(repoService.createNewBranch(repo,sourceBranch,newBranch))
-            return new Result<>(200,null,"Successfully!");
-        else
-            return new Result<>(500,null,"Create failed!");
-    }
-
     @GetMapping("/repo/branches")
     public Result<?> getBranches(@RequestParam String repoOwner,@RequestParam String repoName){
 
@@ -145,6 +136,52 @@ public class RepoController {
         } catch (Exception e) {
             e.printStackTrace();
             return new Result<>(500,null,"System error!");
+        }
+    }
+
+    @GetMapping("/branch/new")
+    public Result<?> createNewBranch(@RequestParam String repoOwner,
+                                     @RequestParam String repoName,
+                                     @RequestParam String sourceBranch,
+                                     @RequestParam String newBranch){
+        Repo repo = new Repo();
+        repo.setRepoOwner(repoOwner);
+        repo.setRepoName(repoName);
+
+        if(repoService.createNewBranch(repo,sourceBranch,newBranch))
+            return new Result<>(200,null,"Successfully!");
+        else
+            return new Result<>(500,null,"Create failed!");
+    }
+
+    @DeleteMapping("/branch/delete")
+    public Result<?> deleteBranch(@RequestParam String repoOwner,
+                                  @RequestParam String repoName,
+                                  @RequestParam String branch){
+
+        String op = "cd " + JGitUtils.getBaseDir() + repoOwner + '/' + repoName + ";"
+                + "git branch -D " + branch;
+        if(CmdUtils.run(op)!=null)
+            return new Result<>(200,null,"Delete branch " + branch + "successfully!");
+        else
+            return new Result<>(500,null,"Delete branch " + branch + "failed!");
+    }
+
+    @GetMapping("/commits/info")
+    public Result<?> getCommitsInfo(@RequestParam String repoOwner,
+                                    @RequestParam String repoName,
+                                    @RequestParam String branch){
+        if (repoOwner.equals("")||repoName.equals("")||branch.equals(""))
+            return new Result<>(200,null,"不应该的请求！");
+
+        Repo repo = new Repo();
+        repo.setRepoOwner(repoOwner);
+        repo.setRepoName(repoName);
+        try{
+            return new Result<>(200,repoService.selectCommitListByRepoAndBranch(repo,branch),"Get commits info successfully!");
+        } catch (Exception e){
+            e.printStackTrace();
+            return new Result<>(500,null,"Get commits info failed!");
         }
     }
 

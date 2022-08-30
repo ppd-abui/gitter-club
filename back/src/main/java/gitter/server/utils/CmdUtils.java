@@ -26,7 +26,7 @@ public class CmdUtils {
                 return null;
             }
 
-            String result = null;
+            String result = "";
             String line = null;
             while ((line = reader.readLine()) != null) {
                 result += line + '\n';

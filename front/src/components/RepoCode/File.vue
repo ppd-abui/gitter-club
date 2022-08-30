@@ -27,7 +27,9 @@
         height="500px">
     </v-md-editor>
     <div style="width: 100px; margin-top: 30px; position: relative; left: 60%; display: flex">
-      <el-button type="success" plain @click="saveFile">Propose change</el-button>
+      <el-button :disabled="enable" type="success" plain @click="saveFile">
+        Propose change
+      </el-button>
       <el-button type="danger" plain @click="flesh">cancel</el-button>
     </div>
   </div>
@@ -51,11 +53,19 @@ import {ElMessage} from "element-plus";
   let path = router.currentRoute.value.fullPath
   let pathData = ref([])
   let fileContent = ref('')
+  let pathList = path.substr(1).split('/')
+
+  let enable = ref(false)
 
   function updateTree() {
     path = router.currentRoute.value.fullPath
     //通过路由获取仓库信息及路径
-    let pathList = path.substr(1).split('/')
+    pathList = path.substr(1).split('/')
+
+    if(localStorage.getItem('userAccount') === pathList[0])
+      enable.value = false
+    else
+      enable.value = true
 
     let branch = pathList[3]
     let suffixDir = ''

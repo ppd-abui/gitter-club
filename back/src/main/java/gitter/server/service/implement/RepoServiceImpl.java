@@ -2,11 +2,13 @@ package gitter.server.service.implement;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import gitter.server.common.Commit;
 import gitter.server.common.Result;
 import gitter.server.entity.Repo;
 import gitter.server.entity.User;
 import gitter.server.mapper.RepoMapper;
 import gitter.server.service.RepoService;
+import gitter.server.utils.CmdUtils;
 import gitter.server.utils.JGitUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.URIish;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -67,6 +70,31 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
         return true;
     }
 
+    @Override
+    public List<Commit> selectCommitListByRepoAndBranch(Repo repo,String branch){
+        String opCheckout = "cd " + JGitUtils.getBaseDir() + repo.getRepoOwner() + '/' + repo.getRepoName() + ";"
+                + "git checkout " + branch;
+        CmdUtils.run(opCheckout);
+
+        String opGitLog = "cd " + JGitUtils.getBaseDir() + repo.getRepoOwner() + '/' + repo.getRepoName() + ";"
+                + "git log --pretty=%h/%s/%cd/%cn --date=short";
+        String resCommits = CmdUtils.run(opGitLog);
+
+        assert resCommits != null;
+        List<Commit> commitList = new ArrayList<>();
+        for(String resLine : resCommits.split("\n")){
+            String[] commitLine = resLine.split("/");
+            Commit commit = new Commit();
+            commit.setSHA(commitLine[0]);
+            commit.setMessage(commitLine[1]);
+            commit.setTime(commitLine[2]);
+            commit.setCommitter(commitLine[3]);
+            commitList.add(commit);
+        }
+
+        return commitList;
+    }
+
     @Override   //通过仓库名搜索仓库（账号+仓库名）
     public Repo selectByRepoName(Repo repo){
         return repoMapper
@@ -84,8 +112,8 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
 
     @Override
     public List<Repo> selectListByKeyword(String keyword){
-        return repoMapper
-                .selectList(Wrappers.<Repo>lambdaQuery()
+        return repoMapper.selectList(Wrappers.<Repo>lambdaQuery()
+                .eq(Repo::getRepoVisibility,"public")
                 .like(Repo::getRepoName,keyword).or()
                 .like(Repo::getRepoBio,keyword));
     }
@@ -117,4 +145,10 @@ public class RepoServiceImpl extends ServiceImpl<RepoMapper, Repo> implements Re
         }
     }
 
+    @Override
+    public Repo selectByRepoNameOnly(Repo repo){
+        return repoMapper
+                .selectOne(Wrappers.<Repo>lambdaQuery()
+                        .eq(Repo::getRepoName,repo.getRepoName()));
+    }
 }

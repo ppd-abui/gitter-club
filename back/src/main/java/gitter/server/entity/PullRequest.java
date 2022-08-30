@@ -12,4 +12,5 @@ public class PullRequest {
     private String pullRequestRemoteBranch;
     private String pullRequestLocalBranch;
     private String pullRequestCreator;
+    private String pullRequestTheme;
 }

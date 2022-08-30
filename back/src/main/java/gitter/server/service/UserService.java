@@ -17,4 +17,5 @@ public interface UserService extends IService<User> {
     //通过token查找用户
     User selectByToken(String token);
     List<User> selectListByKeyword(String keyword);
+    boolean updateUser(User user);
 }

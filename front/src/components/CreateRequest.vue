@@ -4,11 +4,12 @@ export default {
 }
 </script>
 <template>
-  <div>
-    <div style="display: flex; font-size: 20px;margin-top: 25px;margin-left: 15%">
-      <!--悬浮窗-->
-      <div style="z-index: 2;">
-        <div style="box-shadow: #e7e7e7 5px 5px 10px; border: #d1d1d1 solid 1px; border-radius: 5px; margin-top: 10px; width: 300px; background-color: white">
+  <div style="width: 100%; height: 100%">
+    <div style="border: #e4e7ed solid; border-radius: 20px; background-color: #f6f8fa; padding:20px; width: 60%; min-width: 700px; height: 100%; font-size: 20px;margin: 25px auto; padding-bottom: 60px">
+      <div style="text-align: center; font-family: Calibri; font-size: 30px; color: #4a4849"><el-icon style="position: relative; top:5px; right: 10px"><SetUp/></el-icon>Create Pull Request</div>
+      <div style="width: 80%; margin: 20px auto; display: flex">
+        <!--悬浮窗-->
+        <div style="box-shadow: #e7e7e7 5px 5px 10px; border: #d1d1d1 solid 1px; border-radius: 5px; width: 300px; background-color: white">
           <div style="display: flex; margin-top: 10px;">
             <span style="margin-left:20px; color: grey; font-family: Calibri; font-weight: bold; font-size: 14px;">Switch branches</span>
           </div>
@@ -23,10 +24,10 @@ export default {
             </el-table-column>
           </el-table>
         </div>
-      </div>
 
-      <div style="z-index: 2;">
-        <div style="box-shadow: #e7e7e7 5px 5px 10px; border: #d1d1d1 solid 1px; border-radius: 5px; margin-top: 10px; width: 300px; background-color: white">
+        <el-icon size="30px" style="margin: 10px 20px 20px 20px; color: grey"><Back/></el-icon>
+
+        <div style="box-shadow: #e7e7e7 5px 5px 10px; border: #d1d1d1 solid 1px; border-radius: 5px; width: 300px; background-color: white">
           <div style="display: flex; margin-top: 10px;">
             <span style="margin-left:20px; color: grey; font-family: Calibri; font-weight: bold; font-size: 14px;">Switch branches</span>
           </div>
@@ -42,22 +43,27 @@ export default {
           </el-table>
         </div>
       </div>
-
+      <el-divider/>
+      <div style="border: #e4e7ed solid;border-radius: 10px; background-color: white; padding: 20px;">
+        <div style="font-size: 20px; font-family: Calibri; color: #4a4849">Leave your message<span style="color:indianred;">*</span></div>
+        <el-input autosize v-model="pullMessage" type="textarea" style="margin-top: 5px;"/>
+      </div>
+      <el-button style="margin-top: 15px; margin-right: 20px; width: 100px; float: right" type="primary" @click="createPullRequest">create</el-button>
     </div>
-    <el-button style="margin-left: 100px; margin-top: 40px;" @click="createPullRequest">create</el-button>
   </div>
 </template>
 
 
 <script setup>
-import {reactive, ref} from "vue";
-import request from "../utils/request";
-import router from "../router";
-import {ElMessage} from "element-plus";
-  let thisBranchList = ref(['master','newBranch','anotherNewBranch'])
-  let yourBranchList = ref(['master','newBranch','anotherNewBranch'])
-  let nowThisBranch = ref('')
-  let nowYourBranch = ref('')
+  import {reactive, ref} from "vue";
+  import request from "../utils/request";
+  import router from "../router";
+  import {ElMessage} from "element-plus";
+  let thisBranchList = ref([])
+  let yourBranchList = ref([])
+  let nowThisBranch = ref('master')
+  let nowYourBranch = ref('master')
+  let pullMessage = ref('')
 
   function changeThisBranch(index){
     nowThisBranch.value=thisBranchList.value[index]
@@ -78,7 +84,6 @@ import {ElMessage} from "element-plus";
       repoName:pathList[1]
     }
   }).then(res=>{
-    console.log(res)
     if(res.code === 200)
       thisBranchList.value = res.data
     else
@@ -94,7 +99,6 @@ import {ElMessage} from "element-plus";
       repoName:pathList[1]
     }
   }).then(res=>{
-    console.log(res)
     if(res.code === 200)
       yourBranchList.value = res.data
     else
@@ -109,31 +113,37 @@ import {ElMessage} from "element-plus";
     pullRequestRepoName:'',
     pullRequestRemoteBranch:'',
     pullRequestLocalBranch:'',
-    pullRequestCreator:localStorage.getItem("userAccount")
+    pullRequestCreator:localStorage.getItem("userAccount"),
+    pullRequestTheme: ''
   })
 
-  function createPullRequest(){
-    console.log('nowThisBranch:',nowThisBranch.value)
-    console.log('nowYourBranch:',nowYourBranch.value)
-
+  function createPullRequest() {
     pullRequest.pullRequestRepoOwner = pathList[0]
     pullRequest.pullRequestRepoName = pathList[1]
     pullRequest.pullRequestRemoteBranch = nowThisBranch.value
     pullRequest.pullRequestLocalBranch = nowYourBranch.value
+    pullRequest.pullRequestTheme = pullMessage.value
 
-    request.post('/pulls/new',pullRequest).then(res=>{
-      console.log(res)
-      if(res.code === 200)
-        ElMessage({
-          type:'success',
-          message:'Create pull request successfully!'
-        })
-      else
-        ElMessage({
-          type:'error!',
-          message:'Create pull request failed!'
-        })
-    })
+    if (pullRequest.pullRequestTheme !== '') {
+      request.post('/pulls/new', pullRequest).then(res => {
+        if (res.code === 200) {
+          ElMessage({
+            type: 'success',
+            message: 'Create pull request successfully!'
+          })
+          router.push('/'+pathList[0]+'/'+pathList[1]+'/pull')
+        }else
+          ElMessage({
+            type: 'error',
+            message: 'Create pull request failed!'
+          })
+      })
+    } else {
+      ElMessage({
+        type: 'error',
+        message: 'Message can not be null!'
+      })
+    }
   }
 </script>
 
