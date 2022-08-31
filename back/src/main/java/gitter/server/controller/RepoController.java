@@ -12,8 +12,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping()
@@ -111,9 +110,25 @@ public class RepoController {
     }
 
     @GetMapping("/repo/search")
-    public Result<?> repoSearch(@RequestParam String keyWord){
+    public Result<?> repoSearch(@RequestParam String keyWord, @RequestParam String searchSort){
         try {
             List<Repo> resRepos = repoService.selectListByKeyword(keyWord);
+
+            if(searchSort.equals("name")){
+                Collections.sort(resRepos, new Comparator<Repo>() {
+                    @Override
+                    public int compare(Repo o1, Repo o2) {
+                        return o1.getRepoName().compareTo( o2.getRepoName());
+                    }
+                });
+            }else if(searchSort.equals("stars")){
+                Collections.sort(resRepos, new Comparator<Repo>() {
+                    @Override
+                    public int compare(Repo o1, Repo o2) {
+                        return o2.getRepoFollowNum() - o1.getRepoFollowNum();
+                    }
+                });
+            }
             return new Result<>(200,resRepos,"Successfully!");
         } catch (Exception e) {
             e.printStackTrace();
@@ -281,9 +296,7 @@ public class RepoController {
     }
 
     @GetMapping("/repo/change/name")
-    public Result<?> changeRepoName(@RequestParam String repoOwner,
-                                    @RequestParam String repoName,
-                                    @RequestParam String repoNameNew){
+    public Result<?> changeRepoName(@RequestParam String repoOwner, @RequestParam String repoName,@RequestParam String repoNameNew){
         Repo repo = new Repo();
         repo.setRepoOwner(repoOwner);
         repo.setRepoName(repoName);
@@ -291,7 +304,7 @@ public class RepoController {
         res.setRepoName(repoNameNew);
         boolean test = repoService.updateRepo(res);
 
-        if (test)
+        if (test == true)
             return new Result<>(200, null, "Change the repo name successfully");
         else
             return new Result<>(500, null, "fail to change the repo name");
@@ -307,7 +320,7 @@ public class RepoController {
         res.setRepoBio(repoBioNew);
         boolean test = repoService.updateRepo(res);
 
-        if (test)
+        if (test == true)
             return new Result<>(200, null, "Change the repo bio successfully");
         else
             return new Result<>(500, null, "fail to change the repo bio");
@@ -322,7 +335,7 @@ public class RepoController {
         res.setRepoVisibility(repoVisibilityNew);
         boolean test = repoService.updateRepo(res);
 
-        if (test)
+        if (test == true)
             return new Result<>(200, null, "Change the repo visibility successfully");
         else
             return new Result<>(500, null, "fail to change the repo visibility");
@@ -337,7 +350,7 @@ public class RepoController {
         res.setRepoOwner(repoOwnerNew);
         boolean test = repoService.updateRepo(res);
 
-        if (test)
+        if (test == true)
             return new Result<>(200, null, "Change the repo owner successfully");
         else
             return new Result<>(500, null, "fail to change the repo owner");
@@ -352,12 +365,78 @@ public class RepoController {
         Repo res = repoService.selectByRepoName(repo);
         boolean test = repoService.deleteRepo(res);
 
-        if (test)
+        if (test == true)
             return new Result<>(200, null, "Change the repo owner successfully");
         else
             return new Result<>(500, null, "fail to change the repo owner");
     }
 
+    @GetMapping("/user/repo/search")
+    public Result<?> searchUserRepo(@RequestParam String userAccount,@RequestParam String searchValue,@RequestParam String searchVisibility,@RequestParam String searchSort) {
+        try {
+            User user = userService.selectByUserAccount(userAccount);
+            Repo repo = new Repo();
+            repo.setRepoOwner(user.getUserAccount());
+            List<Repo> repos = repoService.selectListByRepoOwner(repo);
 
+
+            if(repos.isEmpty())
+                return  new Result<>(200,null,"No result 1");
+
+            if(!searchValue.equals("")){
+                Iterator<Repo> iterator = repos.iterator();
+                while(iterator.hasNext()) {
+                    Repo next = iterator.next();
+                    String name = next.getRepoName();
+                    if (!name.equals(searchValue)) {
+                        iterator.remove();
+                    }
+                }
+                if(repos.isEmpty())
+                    return new Result<>(200,null,"No result 2");
+            }
+
+            if(!searchVisibility.equals("") && !searchVisibility.equals("all")){
+                Iterator<Repo> iterator = repos.iterator();
+                while(iterator.hasNext()) {
+                    Repo next = iterator.next();
+                    String visibility = next.getRepoVisibility();
+                    if (!visibility.equals(searchVisibility)) {
+                        iterator.remove();
+                    }
+                }
+                if(repos.isEmpty())
+                    return new Result<>(200,null,"No result 3");
+            }
+
+
+            if(searchSort.equals("name")){
+                Collections.sort(repos, new Comparator<Repo>() {
+                    @Override
+                    public int compare(Repo o1, Repo o2) {
+                        if( o1.getRepoName().compareTo( o2.getRepoName()) >= 0 )
+                            return 0;
+                        else
+                            return 1;
+                    }
+                });
+            }else if(searchSort.equals("stars")){
+                Collections.sort(repos, new Comparator<Repo>() {
+                    @Override
+                    public int compare(Repo o1, Repo o2) {
+                        if( o1.getRepoFollowNum().compareTo( o2.getRepoFollowNum()) >= 0 )
+                            return 0;
+                        else
+                            return 1;
+                    }
+                });
+            }
+
+            return new Result<>(200,repos,"获取成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(500, null, "Search fails!");
+        }
+    }
 
 }

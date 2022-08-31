@@ -12,5 +12,6 @@ public interface IssueService  extends IService<Issue> {
     Issue selectByIssueTitle(Issue issue);
     List<Issue> selectByRepoName(String repoOwner, String repoName);
     Issue selectByIssueTitle(String repoOwner, String repoName,String issueTitle);
-     List<Issue> selectListByKeyword(String keyword,String repoOwner, String repoName);
+    List <Issue> selectAll();
+    List<Issue> selectListByKeyword(String keyword,String repoOwner, String repoName);
 }

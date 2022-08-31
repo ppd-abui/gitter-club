@@ -26,7 +26,7 @@ export default {
         <p style="margin-top: 10px">
           <span style="position: relative; left: 51px; font-size: 14px; text-align: center;">Password</span>
 <!--  forgot link-->
-          <el-link style="position: relative; left: 140px; color: #1E97D4; font-size: 12px; text-align: center; margin: auto;">forgot password?</el-link>
+<!--          <el-link style="position: relative; left: 140px; color: #1E97D4; font-size: 12px; text-align: center; margin: auto;">forgot password?</el-link>-->
         </p>
 <!--Password-->
         <el-form-item prop="userPassword" style="width: 250px; margin: auto auto 20px;" >

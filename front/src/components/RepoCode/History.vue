@@ -6,7 +6,7 @@ export default {
 <template>
   <div style="width: 90%;">
 
-    <div style="margin-left: 10%;margin-top: 1%;width: 10%;display: flex">
+    <div style="margin-left: 10%;margin-top: 1%;width: 200px; display: flex">
       <el-icon size="large" style="margin-top: 5%;margin-left: 5%">
         <operation/>
       </el-icon>
@@ -58,7 +58,7 @@ import {ref} from "vue";
 import {ElMessage} from "element-plus";
 
 let selectedBranch = ref('master')
-let branchList = ref(['master','dev'])
+let branchList = ref([])
 let commitsData = ref([])
 let path = router.currentRoute.value.fullPath
 let pathList = path.substr(1).split('/')
@@ -80,6 +80,20 @@ function getCommits(){
         type:'error',
         message:'System error! Get history failed!'
       })
+  })
+}
+
+getBranchInfo()
+
+function getBranchInfo(){
+  request.get('/repo/branches',{
+    params: {
+      repoOwner: pathList[0],
+      repoName: pathList[1]
+    }
+  }).then(res => {
+    console.log(res)
+    branchList.value=res.data
   })
 }
 

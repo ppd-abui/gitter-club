@@ -48,12 +48,16 @@ export default {
 <!--          </el-button>-->
 
           <el-button
-              style="position:relative; top: 5px;"
-              @click=" changeStar()"
-              :icon="test()?StarFilled:Star">
+              style="position:relative; top: 5px;left:10px"
+              split-button
+              :icon="test?StarFilled:Star"
+              @click="changeStar()"
+          >
             <span style="font-family: Calibri; font-size: 14px; font-weight: bold; margin: 2px 10px 0 10px">Star</span>
+            <div style="width: 20px; height: 20px; border-radius: 50%; background-color: #e7e7e7">
+              <span style="color: black; position: relative; top: 4px">{{repo.repoFollowNum}}</span>
+            </div>
           </el-button>
-
         </div>
 
   <!--      辅助线-->
@@ -86,15 +90,16 @@ export default {
               </div>
             </template>
            </el-tab-pane>
-
-          <el-tab-pane label="settings" name="settings">
-            <template #label>
-              <div @click="goto('settings')" style="display: flex">
-                <div style="width: 20px; height: 20px; position: relative; top: 5px"><Setting /></div>
-                <div style="margin-left: 10px">Settings</div>
-              </div>
-            </template>
-          </el-tab-pane>
+          <div v-if="checkPower()">
+            <el-tab-pane label="settings" name="settings">
+              <template #label>
+                <div @click="goto('settings')" style="display: flex">
+                  <div style="width: 20px; height: 20px; position: relative; top: 5px"><Setting /></div>
+                  <div style="margin-left: 10px">Settings</div>
+                </div>
+              </template>
+            </el-tab-pane>
+          </div>
         </el-tabs>
       </div>
 
@@ -106,7 +111,7 @@ export default {
 
 
 <script lang="ts" setup>
-import {onMounted, reactive, ref, watch, watchEffect, onBeforeMount} from 'vue'
+import {onMounted, reactive, ref, watch, watchEffect, onBeforeMount, computed} from 'vue'
 import router from '../router'
 import request from '../utils/request.js'
 import {ElMessage,ElMessageBox} from "element-plus";
@@ -120,6 +125,7 @@ import { Star,StarFilled } from '@element-plus/icons-vue'
     repoOwner: '',
     repoBio: '',
     repoVisibility: '',
+    repoFollowNum: 0
   })
 
   let path = router.currentRoute.value.fullPath
@@ -136,9 +142,19 @@ import { Star,StarFilled } from '@element-plus/icons-vue'
     repo.repoOwner=res.data.repoOwner
     repo.repoBio=res.data.repoBio
     repo.repoVisibility=res.data.repoVisibility
+    repo.repoFollowNum=res.data.repoFollowNum
   })
   function goto(pathName){
     router.push('/'+pathList[0] + '/' + pathList[1] + '/'+pathName)
+  }
+
+  function checkPower(){
+    if(localStorage.getItem("userAccount") === pathList[0]) {
+      return true
+    }
+    else {
+      return false
+    }
   }
 
   function forkRepo(){
@@ -158,13 +174,10 @@ import { Star,StarFilled } from '@element-plus/icons-vue'
     })
   }
 
+let test = computed(()=>{
+  return check.value == true
+})
 
-function test() {
-  if(check.value == true)
-    return true;
-  else
-    return false
-}
 
 onBeforeMount(()=>{
   isStar();
@@ -175,26 +188,25 @@ let check = ref();
 function isStar(){
   request.get('/user/star/check',{
     params:{
-      userAccount:pathList[0],
+      userAccount:localStorage.getItem("userAccount"),
+      repoOwner:pathList[0],
       repoName:pathList[1],
     }
   }).then(res=>{
 
-    console.log("2222222222")
-    console.log(res.data)
     if(res.code === 200)
       if(res.data === 1)
         check.value = true
     if(res.data === 0)
       check.value = false
-    console.log(check.value);
   })
 }
 
 function changeStarFunction(){
   request.get('/user/star/change',{
     params:{
-      userAccount:pathList[0],
+      userAccount:localStorage.getItem("userAccount"),
+      repoOwner:pathList[0],
       repoName:pathList[1],
       testStar:check.value,
     }
@@ -209,30 +221,15 @@ function changeStarFunction(){
         type:'warning',
         message:res.msg,
       })
+    console.log(res)
   })
+  check.value=!check.value
+  if (!check.value) repo.repoFollowNum--
+  else repo.repoFollowNum++
 }
 
 function changeStar(){
-  ElMessageBox.confirm(
-      'Do you want to change the star?',
-      'Warning',
-      {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }
-  ).then(() => {
-        console.log("The function is ddddddddd")
-        console.log(check.value)
-        changeStarFunction()
-        router.go(0)
-      })
-      .catch(() => {
-        ElMessage({
-          type: 'info',
-          message: 'change canceled',
-        })
-      })
+  changeStarFunction()
 }
 
 function goToPersonCenter(){
