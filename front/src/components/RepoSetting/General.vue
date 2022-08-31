@@ -10,12 +10,6 @@
     <br/> <br/>
   </span>
   <el-form label-width="10px">
-    <el-form-item><div> Repository Name </div> <br></el-form-item>
-
-    <el-form-item style="margin-top: -18px;display: flex">
-        <el-input style="width: 15%" v-model=localRepo.localRepoName placeholder="Repository Name" />
-        <el-button style="margin-left: 0.5%" @click="handleChangeRepoName">Rename</el-button>
-    </el-form-item>
 
     <el-form-item><div> Repository Introduction </div> <br></el-form-item>
 
@@ -29,31 +23,7 @@
 
   </el-form>
   <el-divider />
-<!--Social view-->
-  <span style = "font-size: 22px;margin-left: 10px">
-    Social view
-    <br/><br/>
-  </span>
 
-  <el-alert title="warning alert" type="warning" show-icon />
-  <el-form-item label="上传图片" required>
-    <el-upload
-        :show-file-list="false"
-        :on-success="handleAvatarSuccess"
-        :before-upload="beforeAvatarUpload"
-    >
-      <img
-          v-if="imageUrl"
-          :src="imageUrl"
-      />
-      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-      <p style="color: #666; margin-top: 6px; margin-bottom: 12px">
-        点击添加
-      </p>
-    </el-upload>
-  </el-form-item>
-
-  <el-divider></el-divider>
 <!--Danger Zone-->
   <span style = "font-size: 22px;margin-left: 10px ;color: #cf222e">
     Danger Zone
@@ -122,7 +92,7 @@
         <br/>
         <span style="font-size: 15px">Transferring may be delayed until the new owner approves the transfer.</span>
         <br/><br/>
-        <span style="font-size: 15px; ">New owner's GitHub username or organization name.</span>
+        <span style="font-size: 15px; ">New owner's GitHub username.</span>
 
         <el-input style="margin-top: 20px;" v-model="localRepo.localRepoTransName"></el-input>
 
@@ -133,7 +103,7 @@
       </el-dialog>
       <br/><br/>
       <span style="font-size: 15px">
-       Transfer this repository to another user or to an organization where you have the ability to create repositories.
+       Transfer this repository to another user where you have the ability to create repositories.
       </span>
     </div>
     <el-divider/>

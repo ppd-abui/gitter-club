@@ -15,9 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping()
@@ -239,6 +237,89 @@ public class FileController {
             bw.close();
             return true;
         } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @GetMapping("/command")
+    public Result<?> command(@RequestParam String repoOwner,
+                             @RequestParam(defaultValue = "") String dir,
+                             @RequestParam(defaultValue = "") String cmd) throws Exception{
+        //存储操作历史
+        List<String> cmdRecords = new ArrayList<>();
+
+        //存储返回数据（"dir": ,"result":)
+        Map<Object,Object> map = new HashMap<>();
+
+        //存储命令执行结果
+        List<String> result = new ArrayList<>();
+
+        String originPath;
+
+        File file = new File(JGitUtils.getBaseDir() + repoOwner + "/cmdHistory.txt");
+        if(!file.exists())
+            file.createNewFile();
+
+        //无命令则返回路径:第一次获取请求
+        if(dir.equals("")){
+            result.addAll(Arrays.asList(fileToString(JGitUtils.getBaseDir() + repoOwner + "/cmdHistory.txt").split("\n")));
+            originPath=CmdUtils.run("pwd").split("\n")[3];
+        } else {
+            originPath=dir;
+        }
+
+        //将路径存储至map
+        map.put("dir",originPath);
+        map.put("result",result);
+
+        //将当前行命令添加
+        cmdRecords.add("PS " + originPath + "> " + cmd);
+        result.add("PS " + originPath + "> " + cmd);
+
+        //无命令，命令行写入文件返回结果
+        if(cmd.equals("")){
+            appendFile(repoOwner,cmdRecords);
+            return new Result<>(200,map,"No command!");
+        }
+
+        //若为路径跳转，更新路径originPath
+        if(cmd.startsWith("cd ")){
+            String op = "cd " + dir + ";" + cmd + ";pwd";
+            originPath=CmdUtils.run(op).split("\n")[3];
+            map.put("dir",originPath);
+
+            //result即为跟新后的路径originPath
+            result.add("PS " + originPath + "> ");
+            cmdRecords.add("PS " + originPath + "> ");
+            map.put("result",result);
+        } else {
+            //正常命令，存储执行结果
+            String op = "cd " + dir + ";" + cmd;
+            result = Arrays.asList(CmdUtils.run(op).split("\n"));
+            cmdRecords.addAll(result);
+            map.put("result",result);
+        }
+
+        //将本次运行结果存储至历史记录文件
+        appendFile(repoOwner,cmdRecords);
+        return new Result<>(200,map,"Cmd successfully!");
+    }
+
+    private static boolean appendFile(String repoOwner,List<String> cmdRecords){
+        String filePath = JGitUtils.getBaseDir() + repoOwner + "/cmdHistory.txt";
+        File file=new File(filePath);
+        try {
+            RandomAccessFile raf=new RandomAccessFile(file, "rw");
+
+            //将写文件指针移到文件尾。
+            raf.seek(raf.length());
+            for(String line:cmdRecords)
+                raf.writeBytes(line + "\n");
+            raf.close();
+
+            return true;
+        } catch (Exception e){
             e.printStackTrace();
             return false;
         }

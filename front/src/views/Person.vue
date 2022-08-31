@@ -14,12 +14,12 @@ export default {
 
 <template>
   <el-container>
-    <!--Index-->
+<!--Index-->
     <el-header style="padding: 0"> <Index/> </el-header>
     <el-main style="padding: 0">
       <el-container style="display:flex;">
         <el-header style="padding: 0; z-index: 1">
-          <!--Menu（仓库/关注）-->
+<!--Menu（仓库/关注）-->
           <el-menu
               :default-active="'1'"
               mode="horizontal"
@@ -30,20 +30,20 @@ export default {
           </el-menu>
         </el-header>
         <el-container style="z-index: 2">
-          <!--个人信息-->
+  <!--个人信息-->
           <el-aside style="width: 400px; position: relative;  bottom: 60px; z-index: 1">
             <div style="position: relative; width: 100%; margin: 0">
               <img style="width: 100%; object-fit: fill;" src="../assets/black.png">
             </div>
             <div style="width: 350px; margin-left: 50px; position: relative; bottom: 30px">
-              <div style="font-family: 'Calibri Light'; font-size: 20px; color: grey">{{ pathList[0] }}</div>
-              <el-button style="width: 80%; margin-top: 10px" @click="drawer = true">Edit Profile</el-button>
+              <div style="font-family: 'Calibri Light'; font-size: 20px; color: grey">{{pathList[0]}}</div>
+              <el-button style="width: 80%; margin-top: 10px" @click="handleDrawer">Edit Profile</el-button>
             </div>
           </el-aside>
-          <!--子界面路由-->
+    <!--子界面路由-->
           <el-main style="padding: 0; z-index: 2; position: relative; right: 40px">
-            <RepositoryCenter v-if="tab==='RepositoryCenter'"/>
-            <StarCenter v-if="tab==='StarCenter'"/>
+            <RepositoryCenter v-show="tab==='RepositoryCenter'"/>
+            <StarCenter v-show="tab==='StarCenter'"/>
           </el-main>
         </el-container>
       </el-container>
@@ -104,15 +104,16 @@ export default {
           </el-col>
         </el-form-item>
       </el-form>
-
     </el-drawer>
   </el-container>
+<!--  <div id = "hello">-->
+<!--    <router-view/>-->
+<!--  </div>-->
 </template>
 
 <script lang = "ts" setup>
 import router from "../router/index.js";
 import {onBeforeMount, reactive, ref} from "vue";
-import {useRoute} from "vue-router/dist/vue-router";
 import {ElMessage, ElMessageBox} from "element-plus";
 import request from '../utils/request.js';
 
@@ -133,8 +134,23 @@ let user=reactive({
   sex:"",
 })
 
+
+
+const  handleDrawer = () => {
+  if (localStorage.getItem("userAccount") !== pathList[0])
+    ElMessage({
+      type:'warning',
+      message:"You don't have the power"
+    })
+  else
+  {
+    drawer.value = true;
+  }
+}
+
+
 function go(path){
-  router.push({path: '/'+localStorage.getItem('userAccount'), query: {tab: path}})
+  router.push({path: '/'+pathList[0], query: {tab: path}})
   tab.value=path
 }
 
@@ -159,7 +175,6 @@ function begin(){
         }
       }
   ).then(res=>{
-        console.log(res);
         user.name = res.data.userName;
         user.account = res.data.userAccount;
         user.password = res.data.userPassword;
@@ -172,24 +187,32 @@ function begin(){
 
 //修改name
 const  handleChangeUserName = () => {
-  ElMessageBox.confirm(
-      'Do you want to change the name?',
-      'Warning',
-      {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      }
-  )
-      .then(() => {
-        changeUserName()
-      })
-      .catch(() => {
-        ElMessage({
-          type: 'info',
-          message: 'Change canceled',
+  if (localStorage.getItem("userAccount") !== pathList[0])
+  ElMessage({
+    type:'warning',
+    message:"You don't have the power"
+  })
+  else
+  {
+    ElMessageBox.confirm(
+        'Do you want to change the name?',
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+    )
+        .then(() => {
+          changeUserName()
         })
-      })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: 'Change canceled',
+          })
+        })
+  }
 }
 //change userName
 function changeUserName(){

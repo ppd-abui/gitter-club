@@ -14,7 +14,7 @@ import java.util.List;
 
 public class JGitUtils {
 
-    private final static String baseDir = "E:/idea/repository/";
+    private final static String baseDir = "D:/Coding/repository/";
 
     //创建并初始化Git仓库, dir为创建的仓库路径：用户名/仓库名
     public static Git createRepository(String userAccount, String repoName) throws Exception{

@@ -56,4 +56,11 @@ public class IssueServiceImpl extends ServiceImpl<IssueMapper,Issue>  implements
                         .eq(Issue::getIssueReponame,repoName)
                         .eq(Issue::getIssueUsername,repoOwner));
     }
+
+    @Override
+    public   List<Issue> selectAll() {
+        return issueMapper.selectList(Wrappers.<Issue>lambdaQuery()
+                .like(Issue::getIssueTitle,""));
+    }
+
 }

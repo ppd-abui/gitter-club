@@ -18,4 +18,5 @@ public class Repo {
     private String repoFollowers;
     private String repoIssues;
     private String repoCollaborators;
+    private Integer repoFollowNum;
 }

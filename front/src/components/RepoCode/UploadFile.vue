@@ -6,11 +6,11 @@ export default {
 
 <template>
 <!--  upload area-->
-  <div>
-    <div style="width: 1200px;height: 250px;margin-left: 150px;margin-top: 65px;border: #dddddd 1px solid;border-radius: 10px">
+  <div style="width: 100%;">
+    <div style="width: 80%;height: 250px;margin: 65px auto auto;border: #dddddd 1px solid;border-radius: 10px">
       <el-upload
           ref="uploadRef"
-          style="width: 1200px;height: 250px;margin-top: 20px"
+          style="width: 80%; height: 250px;margin: 20px auto auto"
           drag
           action="http://localhost:9090/files/upload/"
           multiple
@@ -28,10 +28,10 @@ export default {
     </div>
 
   <!--  commit message-->
-    <div style="width: 1200px;height: 150px;margin-left: 150px;margin-top: 15px;border: #dddddd 1px solid;border-radius: 10px">
+    <div style="width: 80%;height: 150px;margin: 15px auto auto;border: #dddddd 1px solid;border-radius: 10px">
       <div style="margin-top: 20px;margin-left: 20px; font-size: 20px"> Commit changes </div>
 
-      <el-input v-model="commitInfo.commitMessage" placeholder="Add files via upload" style="width: 1100px; margin-top: 20px;margin-left: 20px"> </el-input>
+      <el-input v-model="commitInfo.commitMessage" placeholder="Add files via upload" style="margin: 20px 10px auto 20px; width: 90%"> </el-input>
 
       <div style="color: grey;margin-top: 20px;margin-left: 20px;">
         Commit directly to the <em style="color: #1E97D4"> master </em> branch !
@@ -40,7 +40,7 @@ export default {
 
 
   <!--  commit and cancel button -->
-    <div style="height: 50px;margin-left: 150px;margin-top: 10px">
+    <div style="height: 50px;margin: 10px;margin-left: 10%">
       <el-button color="#2da44e" @click="commitChanges" style="color: white; border: 1px #ccc solid">
         Commit changes
       </el-button>

@@ -132,7 +132,6 @@ export default {
       v-model="dialogVisible"
       title="Create a Branch"
       width="30%"
-      :before-close="handleClose"
   >
     <div>
       <div>Branch name</div>
@@ -184,6 +183,49 @@ export default {
       </el-button>
     </div>
   </el-dialog>
+
+
+  <el-button style="position: absolute; right: 50px; bottom: 50px" type="primary" @click="drawer = true">
+    Terminal
+  </el-button>
+<!--命令行抽屉-->
+  <el-drawer
+      size="70%"
+      :with-header=false
+      v-model="drawer"
+      direction="btt">
+
+    <div style="background-color: black;width: 100%;height: 100%">
+      <el-card style="background:#0c0c0c;color:white;max-height:27.2em;overflow: auto;height: auto">
+        <div style="background:black;color:white;margin-top: -20px">
+          <ul id="ul">
+            <li v-for="i in result"  style="color: #c2c2c2;font-size: 20px;margin-top: 10px">
+              {{ i }}<br/>
+            </li>
+          </ul>
+          <div style="display: flex;margin-top: 10px">
+
+            <!--        当前路径-->
+            <div style="font-size: 20px;color: #cccccc;width: auto">
+              {{ dirDisplay }}
+            </div>
+
+            <!--        命令行输入框-->
+            <input
+                v-model="cmd"
+                @keyup.enter.passive="enter"
+                type="text"
+                style="background-color: black;
+                margin-left: 3px;
+                border: none;
+                color: #cccccc;
+                font-size: 25px;
+                width: 65%;">
+          </div>
+        </div>
+      </el-card>
+    </div>
+  </el-drawer>
 </template>
 
 <script lang="ts" setup>
@@ -312,6 +354,8 @@ import {ElMessage} from "element-plus";
       ifCloneShow.value=!ifCloneShow.value
 
     })
+
+
   }
 
   function changeBranch(index){
@@ -418,8 +462,51 @@ import {ElMessage} from "element-plus";
     })
   }
 
+  const drawer = ref(false)
+  const cmd = ref('')
+  const dir = ref('')
+  const dirDisplay = ref('')
+  let result = ref([])
+
+  enter()
+  function enter(){
+    result.value.push(dirDisplay.value + cmd.value)
+    request.get('/command',{
+      params:{
+        repoOwner:localStorage.getItem('userAccount'),
+        dir:dir.value,
+        cmd:cmd.value
+      }
+    }).then(res=>{
+      dir.value = res.data.dir
+      dirDisplay.value = 'PS ' + dir.value + '> '
+      if(!cmd.value.startsWith('cd ')){
+        let i
+        for(i=0;i<res.data.result.length;i++){
+          result.value.push(res.data.result[i])
+        }
+      }
+      if(cmd.value === 'clear')
+        result.value = []
+
+      cmd.value=''
+    })
+  }
 </script>
 
 <style scoped>
+  ul {
+    margin:0px;
+    padding:0px;
+    list-style:none;
+  }
 
+  input:focus,textarea:focus {
+    outline: none;
+    border: 1px solid #f60;
+  }
+
+  :deep(.el-drawer btt open){
+    background-color: black;
+  }
 </style>

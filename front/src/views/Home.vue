@@ -18,7 +18,7 @@
       <el-aside style="border-right: #e7e7e7 solid 1px; padding: 0 25px 0 25px" width="300px">
         <div style="display: flex; margin-top: 30px; ">
           <div style="margin: 10px 0 0 5px; font-family: Calibri; font-size: 16px; font-weight: bold">Recent Repositories</div>
-          <el-button @click="goto('createRepo')" style="margin-left: 43px; padding: 0 10px 0 10px">
+          <el-button @click="goto('new')" style="margin-left: 43px; padding: 0 10px 0 10px">
             <el-icon style="margin-right: 4px"><Collection/></el-icon>
             New
           </el-button>
@@ -45,11 +45,11 @@
             <div style="background-color: #f6f8fa; border: #d1d1d1 solid 1px; border-radius: 10px; margin: 30px 10px">
               <div class="helpList">
                 <div class="listBio">To Create a Repository</div>
-                <el-button class="buttonList">New Repository</el-button>
+                <el-button @click="goto('new')" class="buttonList">New Repository</el-button>
               </div>
               <div class="helpList">
                 <div class="listBio">To Explore</div>
-                <el-button class="buttonList">Search</el-button>
+                <el-button @click="goto('search')" class="buttonList">Search</el-button>
               </div>
             </div>
           </div>
@@ -59,18 +59,78 @@
             Notifications
           </div>
           <el-timeline>
+
             <el-timeline-item
-                v-for="(activity, index) in activities"
-                :key="index"
-                :icon="activity.icon"
-                :type="activity.type"
-                :color="activity.color"
-                :size="activity.size"
-                :hollow="activity.hollow"
-                :timestamp="activity.timestamp"
-            >
-              {{ activity.content }}
+                v-for="(event) in allEvent">
+              <div  v-if="event.eventType===EventType.createIssue">
+                <div>
+                  事件类型:{{event.eventType}}
+                </div>
+                <div style="display: flex">
+                  <div>
+                    用户{{event.eventUsername}}
+                  </div>
+                  <div>
+                    在仓库{{event.eventReponame}}中
+                  </div>
+                </div>
+                <div style="display: flex">
+                  创建了标题为
+                  <el-link style="color: #1E97D4;" @click="gotoIssue(event.eventReponame,event.eventTitle)">
+                    {{event.eventTitle}}
+                  </el-link>
+                  的工单
+                </div>
+              </div>
+              <div v-if="event.eventType===EventType.addAssigners">
+                <div>
+                  事件类型:{{event.eventType}}
+                </div>
+                <div style="display: flex">
+                  用户<div >
+                  {{event.eventUsername}}
+                </div>
+                  <div>
+                    在仓库{{event.eventReponame}}中
+                  </div>
+                </div>
+                <div style="display: flex">
+                  指派{{event.eventAssigners}}
+                  为工单
+                  <el-link style="color: #1E97D4; text-underline: #cf222e " @click="gotoIssue(event.eventReponame,event.eventTitle)">
+                    {{event.eventTitle}}
+                  </el-link>
+                  的负责人
+                </div>
+              </div>
+              <div v-if="event.eventType===EventType.deleteAssigners">
+                <div>
+                  事件类型:{{event.eventType}}
+                </div>
+                <div style="display: flex">
+                  <div>
+                    用户{{event.eventUsername}}
+                  </div>
+                  <div>
+                    在仓库{{event.eventReponame}}中
+                  </div>
+                </div>
+                <div style="display: flex">
+                    <div>
+                      取消指派{{event.eventAssigners}}
+                    </div>
+
+                </div>
+                <div style="display: flex">
+                  为工单
+                  <el-link style="color: #1E97D4;" @click="gotoIssue(event.eventUsername,event.eventReponame)">
+                    {{event.eventTitle}}
+                  </el-link>
+                  <div>的负责人</div>
+                </div>
+              </div>
             </el-timeline-item>
+
           </el-timeline>
         </div>
       </el-main>
@@ -82,38 +142,42 @@
 <script lang="ts" setup>
 import router from '../router'
 import require from '../utils/request.js'
-import {reactive, ref, toRef} from "vue";
-  const activities = [
-    {
-      content: '注册页面，实时检测用户名是否重复',
-      timestamp: '1小时前',
-      type: '',
-    },
-    {
-      content: '新建仓库页面，实时检测仓库名是否重复',
-      timestamp: '4小时前',
-      color: '',
-    },
-    {
-      content: '创建仓库前后端实现及连接',
-      timestamp: '7小时前',
-    },
-    {
-      content: '登录后端实现及前后端连接',
-      timestamp: '1天前',
-      type: '',
-      hollow: true,
-    },
-    {
-      content: '登录前端页面实现',
-      timestamp: '2天前',
-    },
-  ]
+import {onBeforeMount, reactive, ref, toRef} from "vue";
+import request from "../utils/request.js";
+
+  const EventType={
+    createIssue:"CreateIssue",
+    addAssigners:"AddAssigner",
+    deleteAssigners:"DeleteAssigner"
+  }
+  let allEvent =ref([])
+  let path = router.currentRoute.value.fullPath;
+  let pathList = path.substr(1).split('/')
+  let userAccount=localStorage.getItem("userAccount");
+  onBeforeMount(() => {
+
+    request.get("/event/get",{
+      params:{
+        userAccount:userAccount
+      }
+    }).then((res)=>
+        {
+          allEvent.value=res.data
+        }
+    )
+  });
+
   function goto(path){
-    router.push({name: path})
+    router.push('/'+path)
   }
 
-  let repoList= ref([])
+  function gotoIssue(repoOwner,repoName)
+  {
+    router.push({path: '/'+repoOwner+'/'+repoName})
+  }
+
+
+let repoList= ref([])
 
   require.get('/repo/info',{
     params:{

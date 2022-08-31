@@ -5,79 +5,7 @@ export default {
 </script>
 
 <template>
-  <!--大标题-->
-  <span style="font-size:30px;font-family: 'Arial'">
-    Who has access
-  </span>
-  <el-divider></el-divider>
- <div>
-  <!--card-->
-  <div v-if="visible == 1" >
-    <el-row>
-      <el-col
-          v-for="(item) in datatable1"
-          :key="item.ID"
-          :span="8"
-          :offset="item.ID > 1 ? 2 : 0"
-      >
-          <el-card style = "width:300px;font-size: 14px" >
-            <template #header>
-              <div class="card-header"
-                style = "display: flex;
-                         justify-content: space-between;
-                         align-items: center;"
-              >
-                <span>{{item.title}}</span>
-                <div v-if="item.ID == 1">
-                  <el-icon><View /></el-icon>
-                </div>
-                <div v-else>
-                  <el-icon><User /></el-icon>
-                </div>
-              </div>
-            </template>
-            <span style = "font-size: 10px">
-              {{item.main}}
-            </span>
-          </el-card>
-      </el-col>
-    </el-row>
-  </div>
-
-  <div v-else>
-    <el-row>
-      <el-col
-          v-for="(item) in datatable2"
-          :key="item.ID"
-          :span="8"
-          :offset="item.ID > 1 ? 2 : 0"
-      >
-        <el-card style = "width:300px;font-size: 14px" >
-          <template #header>
-            <div class="card-header"
-                 style = "display: flex;
-                         justify-content: space-between;
-                         align-items: center;"
-            >
-              <span>{{item.title}}</span>
-              <div v-if="item.ID == 1">
-                <el-icon><Hide /></el-icon>
-              </div>
-              <div v-else>
-                <el-icon><User /></el-icon>
-              </div>
-            </div>
-          </template>
-          <span style = "font-size: 10px">
-              {{item.main}}
-            </span>
-        </el-card>
-      </el-col>
-    </el-row>
-  </div>
- </div>
   <!--管理col-->
-  <el-divider></el-divider>
 
   <div>
     <span style="font-size:30px;font-family: 'Arial';position: relative">
@@ -342,7 +270,7 @@ const datatable1 = [
   {
     ID:'2',
     title:"direct access",
-    main:"this is a repository",
+    main:"Everyone you select have the power to change the repository",
   },
 ]
 const datatable2 = [
@@ -353,8 +281,8 @@ const datatable2 = [
   },
   {
     ID:'2',
-    title:"no direct access",
-    main:"this is a repository",
+    title:"direct access",
+    main:"Everyone you select have the power to change the repository",
   },
 ]
 </script>

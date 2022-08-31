@@ -34,13 +34,9 @@ export default {
           <div style="margin-top: 20px">
             <span v-if="ifSearchRepo">{{searchDateList.length}} repository results</span>
             <span v-else>{{searchDateList.length}} users results</span>
-            <el-select v-model="sortClassify" class="m-2" placeholder="Sort" size="large" style="position: absolute; right: 50px">
-<!--              <el-option-->
-<!--                  v-for="item in sortClassify"-->
-<!--                  :key="item.value"-->
-<!--                  :label="item.label"-->
-<!--                  :value="item.value"-->
-<!--              />-->
+            <el-select v-model="searchSort" class="m-2" placeholder="Sort" size="large" style="position: absolute; right: 50px">
+              <el-option label="name" value="name" />
+              <el-option label="stars" value="stars" />
             </el-select>
           </div>
 <!--搜索仓库-->
@@ -54,6 +50,12 @@ export default {
                     </div>
                     <div style="position: relative; bottom: 7px; left: 6px; display: flex" >
                       <el-link @click="goRepo(scope.$index)" type="primary" style="font-size: 20px">{{searchDateList[scope.$index].repoOwner}}/{{searchDateList[scope.$index].repoName}}</el-link>
+                    </div>
+                    <div style="position: absolute; right: 100px; display: flex; background-color: white; border: #e7e7e7 solid 1px; border-radius: 10px; padding: 3px">
+                      <span style="font-family: Calibri; font-size: 14px; font-weight: bold; margin: 0px 10px 0 10px">Star</span>
+                      <div style="width: 20px; height: 20px; border-radius: 50%; background-color: #e7e7e7; position: relative; top: 2px;">
+                        <span style="font-size: 10px; color: black; position: relative; left: 5px; bottom: 2px">{{searchDateList[scope.$index].repoFollowNum}}</span>
+                      </div>
                     </div>
                   </div>
                   <div style="font-family: Calibri; font-size: 16px; color: grey; margin-left: 30px">{{searchDateList[scope.$index].repoBio}}</div>
@@ -99,14 +101,16 @@ import request from '../utils/request.js'
   let ifSearchRepo=ref(true)
 
   let keyword=ref(router.currentRoute.value.query.keyWord)
+  let searchSort = ref('name')
 
   let searchDateList = ref([])
 
   function searchRepoRequest(){
-    console.log('searchRepo')
+  console.log('research')
     request.get('/repo/search', {
       params: {
-        keyWord: keyword.value
+        keyWord: keyword.value,
+        searchSort: searchSort.value
       }
     }).then(res => {
       if (res.code === 200) {
